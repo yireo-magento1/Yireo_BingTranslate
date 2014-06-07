@@ -1,0 +1,64 @@
+<?php
+/**
+ * Yireo BingTranslate for Magento
+ *
+ * @package     Yireo_BingTranslate
+ * @author      Yireo (http://www.yireo.com/)
+ * @copyright   Copyright (c) 2012 Yireo (http://www.yireo.com/)
+ * @license     Open Software License
+ */
+
+?>
+<div class="bingtranslate-widget">
+    <div style="heading">
+        <strong><?php echo $this->__('BingTranslate configuration'); ?>:</strong>
+    </div>
+
+    <div style="field">
+        <label for="bingtranslate_source_language"><?php echo $this->__('Source language'); ?></label>
+        <select id="bingtranslate_source_language" name="bingtranslate_source_language" onchange="return bingtranslate_change();">
+            <option value="auto"><?php echo $this->__('Automatic'); ?></option>
+            <?php foreach($this->getLanguages() as $language) : ?>
+                <?php $selected = ($this->getSourceLanguage() == $language['value']) ? 'selected="selected"' : null; ?>
+                <option value="<?php echo $language['value']; ?>" <?php echo $selected; ?>><?php echo $language['label']; ?></option>
+            <?php endforeach; ?>
+        </select>
+    </div>
+
+    <div style="field">
+        <label for="bingtranslate_destination_language"><?php echo $this->__('Destination language'); ?></label>
+        <select id="bingtranslate_destination_language" name="bingtranslate_destination_language" onchange="return bingtranslate_change();">
+            <?php foreach($this->getLanguages() as $language) : ?>
+                <?php $selected = ($this->getDestinationLanguage() == $language['value']) ? 'selected="selected"' : null; ?>
+                <?php $value = ($this->getDestinationLanguage() == $language['value']) ? $this->getDestinationLanguage(false) : $language['value']; ?>
+                <option value="<?php echo $value; ?>" <?php echo $selected; ?>><?php echo $language['label']; ?></option>
+            <?php endforeach; ?>
+        </select>
+    </div>
+</div>
+
+<script type="text/javascript">
+function bingtranslate_change() {
+
+    var source = $('bingtranslate_source_language');
+    var sourceValue = source.value;
+    var sourceLabel = source.options[source.selectedIndex].text;
+
+    var destination = $('bingtranslate_destination_language');
+    var destinationValue = destination.value;
+    var destinationLabel = destination.options[destination.selectedIndex].text;
+
+    var label = '<?php echo Mage::getStoreConfig('catalog/bingtranslate/buttonlabel'); ?>';
+    label = label.replace('$FROM', sourceLabel);
+    label = label.replace('$TO', destinationLabel);
+
+    if(sourceValue != '' && destinationValue != '') {
+        $$('.bingtranslate_button').each(function(button) {
+            button.down('span').update(label);
+            button.className = 'bingtranslate_button';
+            //button.removeClassName('disabled');
+            button.disabled = false;
+        });
+    }
+}
+</script>

@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<layout>
+    <adminhtml_catalog_product_edit>
+        <update handle="bingtranslate_load" />
+        <reference name="bingtranslate_script">
+            <action method="setPageType"><type>product</type></action>
+        </reference>
+    </adminhtml_catalog_product_edit>
+
+    <adminhtml_catalog_category_edit>
+        <update handle="bingtranslate_load" />
+        <reference name="bingtranslate_script">
+            <action method="setPageType"><type>category</type></action>
+        </reference>
+    </adminhtml_catalog_category_edit>
+
+    <adminhtml_cms_page_edit>
+        <update handle="bingtranslate_load" />
+        <reference name="bingtranslate_script">
+            <action method="setPageType"><type>page</type></action>
+        </reference>
+    </adminhtml_cms_page_edit>
+
+    <adminhtml_cms_block_edit>
+        <update handle="bingtranslate_load" />
+        <reference name="bingtranslate_script">
+            <action method="setPageType"><type>block</type></action>
+        </reference>
+    </adminhtml_cms_block_edit>
+
+    <bingtranslate_load>
+        <reference name="head">
+            <action method="addItem"><type>skin_css</type><name>css/bingtranslate.css</name></action>
+        </reference>
+
+        <reference name="before_body_end">
+            <block type="bingtranslate/script" name="bingtranslate_script" template="bingtranslate/script.phtml" />
+            <block type="bingtranslate/widget" name="bingtranslate_widget" template="bingtranslate/widget.phtml" after="-" />
+        </reference>
+    </bingtranslate_load>
+</layout>

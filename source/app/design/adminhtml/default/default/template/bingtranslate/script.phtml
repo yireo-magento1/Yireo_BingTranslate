@@ -1,0 +1,78 @@
+<?php
+/**
+ * Yireo BingTranslate for Magento 
+ *
+ * @package     Yireo_BingTranslate
+ * @author      Yireo (http://www.yireo.com/)
+ * @copyright   Copyright (c) 2014 Yireo (http://www.yireo.com/)
+ * @license     Open Software License
+ */
+
+?>
+<script type="text/javascript">
+function bingtranslate(data_id, attribute_code, html_id, store_id, from_language, to_language)
+{
+    // Fetch the from_language and to_language if not yet set
+    new_from_language = $('bingtranslate_source_language').value;
+    new_to_language = $('bingtranslate_destination_language').value;
+    if(new_from_language) from_language = new_from_language;
+    if(new_to_language) to_language = new_to_language;
+
+    // Define variables
+    var button = $('bingtranslate_button_' + attribute_code);
+    var field = $(html_id);
+    var ajaxUrl = '<?php echo $this->getAjaxUrl(); ?>'
+        + 'id/' + data_id + '/'
+        + 'attribute/' + attribute_code + '/'
+        + 'from/' + from_language + '/'
+        + 'to/' + to_language  + '/'
+        + 'store/' + store_id + '/'
+    ;
+
+    // Check if the field is actually enabled
+    if(field == null || field.disabled) {
+        button.disabled = true;
+        button.className = 'disabled';
+        return false;
+    }
+
+    // If all is right, perform an AJAX-request
+    new Ajax.Request(ajaxUrl, {
+        method: 'get', 
+        onSuccess: function(transport) {
+            var response = transport.responseText;
+            if(response) {
+                json = response.evalJSON(true);
+
+                // Alert in case of an error
+                if(json.error) {
+                    if(json.message) {
+                        message = json.message;
+                    } else {
+                        message = json.error;
+                    }
+                    alert('ERROR: ' + message);
+
+                // Set the new field-value and disable the button
+                } else {
+
+                    $(field).value = json.translation;
+
+                    if(tinyMCE) {
+                        var editor = tinyMCE.get(html_id);
+                        if(editor) {
+                            editor.setContent(json.translation);
+                        }
+                    }
+
+                    //button.className = 'disabled';
+                    //button.disabled = true;
+                }
+            }
+        },
+
+        // General failure
+        onFailure: function(){ alert('Failed to contact BingTranslate') }
+    });
+}
+</script>

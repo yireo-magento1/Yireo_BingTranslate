@@ -1,0 +1,127 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Yireo BingTranslate for Magento 
+ *
+ * @package     Yireo_BingTranslate
+ * @author      Yireo (http://www.yireo.com/)
+ * @copyright   Copyright (C) 2014 Yireo (http://www.yireo.com/)
+ * @license     Open Source License (OSL v3)
+ */
+-->
+<config>
+
+    <modules>
+        <Yireo_BingTranslate>
+            <version>0.2.6</version>
+        </Yireo_BingTranslate>
+    </modules>
+
+    <global>
+        <blocks>
+            <bingtranslate>
+                <class>Yireo_BingTranslate_Block</class>
+            </bingtranslate>
+        </blocks>
+
+        <helpers>
+            <bingtranslate>
+                <class>Yireo_BingTranslate_Helper</class>
+            </bingtranslate>
+        </helpers>
+
+        <models>
+            <bingtranslate>
+                <class>Yireo_BingTranslate_Model</class>
+            </bingtranslate>
+        </models>
+    </global>
+
+    <adminhtml>
+        <events>
+            <core_block_abstract_to_html_before>
+                <observers>
+                    <bingtranslate_add_html>
+                        <type>singleton</type>
+                        <class>Yireo_BingTranslate_Model_Observer</class>
+                        <method>coreBlockAbstractToHtmlBefore</method>
+                    </bingtranslate_add_html>
+                </observers>
+            </core_block_abstract_to_html_before>
+            <controller_action_predispatch>
+                <observers>
+                    <bingtranslate_controller_action_predispatch>
+                        <type>singleton</type>
+                        <class>Yireo_BingTranslate_Model_Observer</class>
+                        <method>controllerActionPredispatch</method>
+                    </bingtranslate_controller_action_predispatch>
+                </observers>
+            </controller_action_predispatch>
+        </events>
+
+        <translate>
+            <modules>
+                <Yireo_BingTranslate>
+                    <files>
+                        <default>Yireo_BingTranslate.csv</default>
+                    </files>
+                </Yireo_BingTranslate>
+            </modules>
+        </translate>
+
+        <layout>
+            <updates>
+                <bingtranslate>
+                    <file>bingtranslate.xml</file>
+                </bingtranslate>
+            </updates>
+        </layout>
+
+        <acl>
+            <resources>
+                <admin>
+                    <children>
+                        <system>
+                            <children>
+                                <config>
+                                    <children>
+                                        <bingtranslate translate="title" module="bingtranslate">
+                                            <title>BingTranslate Section</title>
+                                        </bingtranslate>
+                                    </children>
+                                </config>
+                            </children>
+                        </system>
+                    </children>
+                </admin>
+            </resources>
+        </acl>
+    </adminhtml>
+
+    <admin>
+        <routers>
+            <bingtranslate>
+                <use>admin</use>
+                <args>
+                    <module>Yireo_BingTranslate</module>
+                    <frontName>bingtranslate</frontName>
+                </args>
+            </bingtranslate>
+        </routers>
+    </admin>
+
+    <default>
+        <catalog>
+            <bingtranslate>
+                <client_id></client_id>
+                <client_secret></client_secret>
+                <buttonlabel>BingTranslate from $FROM to $TO</buttonlabel>
+                <langcode></langcode>
+                <only_supported_languages>1</only_supported_languages>
+                <overwrite_existing>1</overwrite_existing>
+                <bork>0</bork>
+            </bingtranslate>
+        </catalog>
+    </default>
+
+</config>

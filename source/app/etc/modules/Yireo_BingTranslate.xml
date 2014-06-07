@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Yireo BingTranslate-module for Magento 
+ *
+ * @package     Yireo_BingTranslate
+ * @author      Yireo (http://www.yireo.com/)
+ * @copyright   Copyright (c) 2013 Yireo (http://www.yireo.com/)
+ * @license     Open Software License
+ */
+-->
+<config>
+    <modules>
+        <Yireo_BingTranslate>
+            <active>false</active>
+            <codePool>community</codePool>
+        </Yireo_BingTranslate>
+    </modules>
+</config>

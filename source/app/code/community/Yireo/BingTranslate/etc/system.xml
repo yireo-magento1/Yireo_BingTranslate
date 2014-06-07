@@ -1,0 +1,95 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Yireo BingTranslate for Magento 
+ *
+ * @package     Yireo_BingTranslate
+ * @author      Yireo (http://www.yireo.com/)
+ * @copyright   Copyright (C) 2014 Yireo (http://www.yireo.com/)
+ * @license     Open Source License (OSL v3)
+ */
+-->
+<config>
+    <sections>
+        <catalog>
+            <groups>
+                <bingtranslate translate="label">
+                    <label>BingTranslate</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>900</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <client_id translate="label">
+                            <label>Azure Client ID</label>
+                            <comment><![CDATA[See <a href="https://datamarket.azure.com/developer/applications">datamarket.azure.com/developer</a>]]></comment>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>1</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </client_id>
+                        <client_secret translate="label">
+                            <label>Azure Client Secret</label>
+                            <comment><![CDATA[See <a href="https://datamarket.azure.com/developer/applications">datamarket.azure.com/developer</a>]]></comment>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>2</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </client_secret>
+                        <buttonlabel translate="label">
+                            <label>Button format</label>
+                            <comment><![CDATA[Format of button-label ($FROM and $TO)]]></comment>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>11</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </buttonlabel>
+                        <langcode translate="label">
+                            <label>Manual language code</label>
+                            <comment>(Optional) <![CDATA[http://msdn.microsoft.com/en-us/library/hh456380.aspx]]></comment>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>12</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </langcode>
+                        <only_supported_languages translate="label">
+                            <label>Only supported languages</label>
+                            <comment>See <![CDATA[http://msdn.microsoft.com/en-us/library/hh456380.aspx]]></comment>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>13</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </only_supported_languages>
+                        <overwrite_existing translate="label">
+                            <label>Overwrite existing values</label>
+                            <comment>When using the Product API, overwrite existing values</comment>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>14</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </overwrite_existing>
+                        <bork translate="label">
+                            <label>Bork Debugging</label>
+                            <frontend_type>select</frontend_type>
+                            <comment><![CDATA[Use bork-words for debugging]]></comment>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>20</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </bork>
+                    </fields>
+                </bingtranslate>
+            </groups>
+        </catalog>
+    </sections>
+</config>

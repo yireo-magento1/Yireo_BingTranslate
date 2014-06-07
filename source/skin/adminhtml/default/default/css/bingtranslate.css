@@ -1,0 +1,19 @@
+/**
+ * Yireo BingTranslate for Magento
+ *
+ * @package     Yireo_BingTranslate
+ * @author      Yireo (http://www.yireo.com/)
+ * @copyright   Copyright (c) 2012 Yireo (http://www.yireo.com/)
+ * @license     Open Software License
+ */
+
+div.bingtranslate-widget {
+    border: 1px solid #d6d6d6;
+    background-color: #FFFCB2;
+    height: 50px;
+}
+
+div.bingtranslate-widget div {
+    float: left;
+    padding: 10px;
+}
