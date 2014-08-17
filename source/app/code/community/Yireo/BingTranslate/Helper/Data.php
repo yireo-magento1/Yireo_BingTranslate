@@ -218,4 +218,22 @@ class Yireo_BingTranslate_Helper_Data extends Mage_Core_Helper_Abstract
             'vi',
         );
     }
+
+    /*
+     * Return the title of the destination language
+     * 
+     * @access public
+     * @param null
+     * @return string
+     */
+    public function getStoreByCode($code)
+    {
+        $stores = Mage::app()->getStores();
+        foreach($stores as $store){
+            if($store->getCode() == $code) {
+                return $store;
+            }
+         }
+        return Mage::getModel('core/store');
+    }
 }

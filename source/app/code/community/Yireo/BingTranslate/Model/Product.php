@@ -34,7 +34,11 @@ class Yireo_BingTranslate_Model_Product extends Mage_Core_Model_Abstract
         foreach($stores as $store) {
 
             if(!is_object($store)) {
-                $store = Mage::getModel('core/store')->load($store);
+                if(is_numeric($store)) {
+                    $store = Mage::getModel('core/store')->load($store);
+                } else {
+                    $store = Mage::helper('bingtranslate')->getStoreByCode($store);
+                }
             }
 
             // Load the product into this store-scope

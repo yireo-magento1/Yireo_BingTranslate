@@ -99,7 +99,7 @@ class Yireo_BingTranslate_Model_Translator extends Mage_Core_Model_Abstract
         }
 
         // Detect HTML feedback
-        if(preg_match('/\<\/html\>$/', $result)) {
+        if(preg_match('/\<\/html\>$/', $result) || preg_match('/\ style=\"/', $result)) {
 
             // Try to extract the message from this HTML
             if(preg_match('/<p>Message:(.*)<\/p>/m', $result, $match)) {
@@ -107,18 +107,22 @@ class Yireo_BingTranslate_Model_Translator extends Mage_Core_Model_Abstract
                 return false;
             }
 
-            if(!is_dir(BP.DS.'var'.DS.'log')) @mkdir(BP.DS.'var'.DS.'log');
-            $tmp_file = BP.DS.'var'.DS.'log'.DS.'bingtranslate.log';
-            $tmp_string = $this->__('Translating from %s to %s', $fromLang, $toLang);
-            file_put_contents($tmp_file, $tmp_string."\n", FILE_APPEND);
-            file_put_contents($tmp_file, $result."\n", FILE_APPEND);
+            $this->debugLog($result, $fromLang, $toLang);
+            $this->apiError = $this->__('Response is HTML, not XML [saved in %s]', 'var/log/bingtranslate.log');
+            return false;
+        }
 
+        // Fetch the XML-data
+        try {
+            $xml = new SimpleXMLElement($result);
+        } catch(Exception $e) {
+
+            $this->debugLog($e->getMessage(), $fromLang, $toLang);
             $this->apiError = $this->__('Response is HTML, not XML [saved in %s]', 'var/log/bingtranslate.log');
             return false;
         }
 
         // Parse the XML-data
-        $xml = new SimpleXMLElement($result);
         if(is_object($xml)) {
             $translation = trim((string)$xml);
 
@@ -229,5 +233,14 @@ class Yireo_BingTranslate_Model_Translator extends Mage_Core_Model_Abstract
     {
         if(is_array($string)) $string = explode('; ', $string);
         return Mage::helper('bingtranslate')->__($string, $variable1, $variable2);
+    }
+
+    public function debugLog($string, $fromLang, $toLang)
+    {
+        if(!is_dir(BP.DS.'var'.DS.'log')) @mkdir(BP.DS.'var'.DS.'log');
+        $tmp_file = BP.DS.'var'.DS.'log'.DS.'bingtranslate.log';
+        $tmp_string = $this->__('Translating from %s to %s', $fromLang, $toLang);
+        file_put_contents($tmp_file, $tmp_string."\n", FILE_APPEND);
+        file_put_contents($tmp_file, $string."\n", FILE_APPEND);
     }
 }
