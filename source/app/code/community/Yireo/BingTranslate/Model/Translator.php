@@ -26,9 +26,7 @@ class Yireo_BingTranslate_Model_Translator extends Mage_Core_Model_Abstract
     {
         // Bork debugging
         if(Mage::getStoreConfig('catalog/bingtranslate/bork')) {
-            $wordCount = (int)str_word_count($text);
-            if($wordCount < 4) $wordCount = 4;
-            $this->apiTranslation = str_repeat('bork ', $wordCount);
+            $this->apiTranslation = $this->bork($text);
             return $this->apiTranslation;
         }
 
@@ -242,5 +240,40 @@ class Yireo_BingTranslate_Model_Translator extends Mage_Core_Model_Abstract
         $tmp_string = $this->__('Translating from %s to %s', $fromLang, $toLang);
         file_put_contents($tmp_file, $tmp_string."\n", FILE_APPEND);
         file_put_contents($tmp_file, $string."\n", FILE_APPEND);
+    }
+
+    public function bork($text)
+    {
+        $textBlocks = preg_split( '/(%[^ ]+)/', $text, -1, PREG_SPLIT_DELIM_CAPTURE );
+        $newTextBlocks = array();
+        foreach ( $textBlocks as $text )
+        {
+            if ( strlen( $text ) && $text[0] == '%' )
+            {
+                $newTextBlocks[] = (string) $text;
+                continue;
+            }
+            $orgtext = $text;
+            $searchMap = array(
+                '/au/', '/\Bu/', '/\Btion/', '/an/', '/a\B/', '/en\b/',
+                '/\Bew/', '/\Bf/', '/\Bir/', '/\Bi/', '/\bo/', '/ow/', '/ph/',
+                '/th\b/', '/\bU/', '/y\b/', '/v/', '/w/', '/ooo/',
+            );
+            $replaceMap = array(
+                'oo', 'oo', 'shun', 'un', 'e', 'ee',
+                'oo', 'ff', 'ur', 'ee', 'oo', 'oo', 'f',
+                't', 'Oo', 'ai', 'f', 'v', 'oo',
+            );
+            $text = preg_replace( $searchMap, $replaceMap, $text );
+            if ( $orgtext == $text && count( $newTextBlocks ) )
+            {
+                $text .= '-a';
+            }
+            $newTextBlocks[] = (string) $text;
+        }
+        $text = implode( '', $newTextBlocks );
+        $text = preg_replace( '/([:.?!])(.*)/', '\\2\\1', $text );
+        $text .= ' Bork bork.';
+        return $text;
     }
 }
