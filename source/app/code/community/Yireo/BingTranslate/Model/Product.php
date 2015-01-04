@@ -4,7 +4,7 @@
  *
  * @package     Yireo_BingTranslate
  * @author      Yireo (http://www.yireo.com/)
- * @copyright   Copyright (C) 2014 Yireo (http://www.yireo.com/)
+ * @copyright   Copyright 2015 Yireo (http://www.yireo.com/)
  * @license     Open Source License (OSL v3)
  */
 
@@ -13,8 +13,22 @@
  */
 class Yireo_BingTranslate_Model_Product extends Mage_Core_Model_Abstract
 {
+    /**
+     * Counter of characters
+     *
+     * @var int
+     */
     protected $charCount = 0;
 
+    /**
+     * Method to translate specific attributes of a specific product
+     *
+     * @param $product
+     * @param $productAttributes
+     * @param $stores
+     * @param int $delay
+     * @param bool $translate
+     */
     public function translate($product, $productAttributes, $stores, $delay = 0, $translate = true)
     {
         // Reset some values
@@ -94,6 +108,11 @@ class Yireo_BingTranslate_Model_Product extends Mage_Core_Model_Abstract
         }
     }
 
+    /**
+     * Method to return the current character count
+     *
+     * @return int
+     */
     public function getCharCount()
     {
         return $this->charCount;

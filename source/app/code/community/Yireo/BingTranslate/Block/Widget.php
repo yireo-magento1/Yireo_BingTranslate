@@ -4,7 +4,7 @@
  *
  * @package     Yireo_BingTranslate
  * @author      Yireo (http://www.yireo.com/)
- * @copyright   Copyright (C) 2014 Yireo (http://www.yireo.com/)
+ * @copyright   Copyright 2015 Yireo (http://www.yireo.com/)
  * @license     Open Source License (OSL v3)
  */
 
@@ -13,10 +13,13 @@
  */
 class Yireo_BingTranslate_Block_Widget extends Mage_Core_Block_Template
 {
+    /**
+     * Constructor
+     */
     public function __construct()
     {
         parent::__construct();
-        $this->setData('area','adminhtml');
+        $this->setData('area', 'adminhtml');
     }
 
     /*
@@ -39,9 +42,9 @@ class Yireo_BingTranslate_Block_Widget extends Mage_Core_Block_Template
     * @return string
     */
     public function getDestinationLanguage($stripped = true)
-    {   
+    {
         $code = Mage::helper('bingtranslate')->getToLanguage();
-        if($stripped) {
+        if ($stripped) {
             return preg_replace('/\-(.*)$/', '', $code);
         } else {
             return $code;
@@ -60,18 +63,18 @@ class Yireo_BingTranslate_Block_Widget extends Mage_Core_Block_Template
         $options = array();
 
         $locale = Mage::getModel('core/locale')->getLocale();
-        $locales    = $locale->getLocaleList();
-        $languages  = $locale->getTranslationList('language', $locale);
+        $locales = $locale->getLocaleList();
+        $languages = $locale->getTranslationList('language', $locale);
 
         foreach ($locales as $code => $active) {
 
-            if(strstr($code, '_')) continue;
+            if (strstr($code, '_')) continue;
 
             if (!isset($languages[$code])) {
                 continue;
             }
-            
-            if(Mage::helper('bingtranslate')->isSupportedLanguage($code) == false) {
+
+            if (Mage::helper('bingtranslate')->isSupportedLanguage($code) == false) {
                 continue;
             }
 
@@ -79,7 +82,7 @@ class Yireo_BingTranslate_Block_Widget extends Mage_Core_Block_Template
 
             $options[] = array(
                 'value' => $code,
-                'label' => $label.' ['.$code.']',
+                'label' => $label . ' [' . $code . ']',
             );
         }
 

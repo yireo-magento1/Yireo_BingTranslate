@@ -1,10 +1,10 @@
 <?php
 /**
- * Yireo BingTranslate for Magento 
+ * Yireo BingTranslate for Magento
  *
  * @package     Yireo_BingTranslate
  * @author      Yireo (http://www.yireo.com/)
- * @copyright   Copyright (C) 2014 Yireo (http://www.yireo.com/)
+ * @copyright   Copyright 2015 Yireo (http://www.yireo.com/)
  * @license     Open Source License (OSL v3)
  */
 
@@ -13,10 +13,14 @@
  */
 class Yireo_BingTranslate_Block_Script extends Mage_Core_Block_Template
 {
+    /**
+     * Constructor
+     */
     public function __construct()
     {
         parent::__construct();
-        $this->setData('area','adminhtml');
+
+        $this->setData('area', 'adminhtml');
     }
 
     /*
@@ -27,7 +31,7 @@ class Yireo_BingTranslate_Block_Script extends Mage_Core_Block_Template
      * @param array $params
      * @return string
      */
-    public function getUrl($route='', $params=array())
+    public function getUrl($route = '', $params = array())
     {
         return Mage::getModel('adminhtml/url')->getUrl($route, $params);
     }
@@ -41,6 +45,6 @@ class Yireo_BingTranslate_Block_Script extends Mage_Core_Block_Template
      */
     public function getAjaxUrl()
     {
-        return $this->getUrl('bingtranslate/index/'.$this->getPageType());
+        return $this->getUrl('bingtranslate/index/' . $this->getPageType());
     }
 }

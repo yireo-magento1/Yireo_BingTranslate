@@ -1,10 +1,10 @@
 <?php
 /**
- * Yireo BingTranslate for Magento 
+ * Yireo BingTranslate for Magento
  *
  * @package     Yireo_BingTranslate
  * @author      Yireo (http://www.yireo.com/)
- * @copyright   Copyright (C) 2014 Yireo (http://www.yireo.com/)
+ * @copyright   Copyright 2015 Yireo (http://www.yireo.com/)
  * @license     Open Source License (OSL v3)
  */
 
@@ -13,9 +13,9 @@
  */
 class Yireo_BingTranslate_Model_Observer extends Yireo_BingTranslate_Model_Observer_Abstract
 {
-    /*
+    /**
      * Listen to the event core_block_abstract_to_html_before
-     * 
+     *
      * @access public
      * @parameter Varien_Event_Observer $observer
      * @return $this
@@ -23,7 +23,7 @@ class Yireo_BingTranslate_Model_Observer extends Yireo_BingTranslate_Model_Obser
     public function coreBlockAbstractToHtmlBefore($observer)
     {
         // Check if this event can continue
-        if($this->allow($observer) == false) {
+        if ($this->allow($observer) == false) {
             return $this;
         }
 
@@ -46,21 +46,21 @@ class Yireo_BingTranslate_Model_Observer extends Yireo_BingTranslate_Model_Obser
 
         // Determine whether this field is disabled or not
         $disabled = false;
-        if($from_language == $to_language) $disabled = true;
+        if ($from_language == $to_language) $disabled = true;
 
         // Fetch the data ID (either category ID or product ID) from the URL
         $data_id = Mage::app()->getRequest()->getParam('id');
-        if(empty($data_id)) $data_id = Mage::app()->getRequest()->getParam('page_id');
+        if (empty($data_id)) $data_id = Mage::app()->getRequest()->getParam('page_id');
 
         // If this data-type is unknown, do not display anything
-        if($data_type == 'unknown') {
+        if ($data_type == 'unknown') {
             return $this;
         }
 
         // If this is a Root Catalog, do not display anything
-        if($data_type == 'category') {
+        if ($data_type == 'category') {
             $category = Mage::getModel('catalog/category')->load($data_id);
-            if($category->getParentId() == 1) {
+            if ($category->getParentId() == 1) {
                 return $this;
             }
         }
@@ -95,7 +95,7 @@ class Yireo_BingTranslate_Model_Observer extends Yireo_BingTranslate_Model_Obser
         return $this;
     }
 
-    /*
+    /**
      * Method fired on the event <controller_action_predispatch>
      *
      * @access public

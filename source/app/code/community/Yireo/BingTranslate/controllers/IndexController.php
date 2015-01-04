@@ -1,10 +1,10 @@
 <?php
 /**
- * Yireo BingTranslate for Magento 
+ * Yireo BingTranslate for Magento
  *
  * @package     Yireo_BingTranslate
  * @author      Yireo (http://www.yireo.com/)
- * @copyright   Copyright (C) 2014 Yireo (http://www.yireo.com/)
+ * @copyright   Copyright 2015 Yireo (http://www.yireo.com/)
  * @license     Open Source License (OSL v3)
  */
 
@@ -21,13 +21,13 @@ class Yireo_BingTranslate_IndexController extends Mage_Adminhtml_Controller_Acti
      *
      * @access public
      * @param null
-     * @return null
+     * @return mixed
      */
     public function productAction()
     {
         // Load the initial data, and don't continue if this fails
-        if($this->preload() == false) {
-            return;
+        if ($this->preload() == false) {
+            return null;
         }
 
         // Load the correct data-model
@@ -36,20 +36,22 @@ class Yireo_BingTranslate_IndexController extends Mage_Adminhtml_Controller_Acti
         $store = $translator->getData('store');
 
         $product = Mage::getModel('catalog/product')->setStoreId($store)->load($id);
-        if(!$product->getId() > 0) {
+        if (!$product->getId() > 0) {
             return $this->sendError($this->__('No product ID given'));
         }
 
         // Load the attribute-value
         $attribute = $translator->getData('attribute');
         $text = $product->getData($attribute);
-        if(empty($text)) {
+        if (empty($text)) {
             return $this->sendError($this->__('No product-data found for attribute %s', $attribute));
         }
+
         $translator->setData('text', $text);
 
         // Make the request to the API
         $this->translate();
+        return null;
     }
 
     /**
@@ -57,13 +59,13 @@ class Yireo_BingTranslate_IndexController extends Mage_Adminhtml_Controller_Acti
      *
      * @access public
      * @param null
-     * @return null
+     * @return mixed
      */
     public function categoryAction()
     {
         // Load the initial data, and don't continue if this fails
-        if($this->preload() == false) {
-            return;
+        if ($this->preload() == false) {
+            return null;
         }
 
         // Load the correct data-model
@@ -72,20 +74,22 @@ class Yireo_BingTranslate_IndexController extends Mage_Adminhtml_Controller_Acti
         $store = $translator->getData('store');
 
         $category = Mage::getModel('catalog/category')->setStoreId($store)->load($id);
-        if(!$category->getId() > 0) {
-            return $this->sendError($this->_('No category ID given'));
+        if (!$category->getId() > 0) {
+            return $this->sendError($this->__('No category ID given'));
         }
 
         // Load the attribute-value
         $attribute = $translator->getData('attribute');
         $text = $category->getData($attribute);
-        if(empty($text)) {
+        if (empty($text)) {
             return $this->sendError($this->__('No category-data found for attribute %s', $attribute));
         }
+
         $translator->setData('text', $text);
 
         // Make the request to the API
         $this->translate();
+        return null;
     }
 
     /**
@@ -93,13 +97,13 @@ class Yireo_BingTranslate_IndexController extends Mage_Adminhtml_Controller_Acti
      *
      * @access public
      * @param null
-     * @return null
+     * @return mixed
      */
     public function pageAction()
     {
         // Load the initial data, and don't continue if this fails
-        if($this->preload() == false) {
-            return;
+        if ($this->preload() == false) {
+            return null;
         }
 
         // Load the correct data-model
@@ -108,20 +112,21 @@ class Yireo_BingTranslate_IndexController extends Mage_Adminhtml_Controller_Acti
         $store = $translator->getData('store');
 
         $page = Mage::getModel('cms/page')->setStoreId($store)->load($id);
-        if(!$page->getId() > 0) {
+        if (!$page->getId() > 0) {
             return $this->sendError($this->__('No CMS-page ID given'));
         }
 
         // Load the attribute-value
         $attribute = $translator->getData('attribute');
         $text = $page->getData($attribute);
-        if(empty($text)) {
+        if (empty($text)) {
             return $this->sendError($this->__('No page-data found for attribute %s', $attribute));
         }
         $translator->setData('text', $text);
 
         // Make the request to the API
         $this->translate();
+        return null;
     }
 
     /**
@@ -129,13 +134,13 @@ class Yireo_BingTranslate_IndexController extends Mage_Adminhtml_Controller_Acti
      *
      * @access public
      * @param null
-     * @return null
+     * @return mixed
      */
     public function blockAction()
     {
         // Load the initial data, and don't continue if this fails
-        if($this->preload() == false) {
-            return;
+        if ($this->preload() == false) {
+            return null;
         }
 
         // Load the correct data-model
@@ -143,20 +148,22 @@ class Yireo_BingTranslate_IndexController extends Mage_Adminhtml_Controller_Acti
         $id = $translator->getData('id');
         $store = $translator->getData('store');
         $block = Mage::getModel('cms/block')->setStoreId($store)->load($id);
-        if(!$block->getId() > 0) {
+        if (!$block->getId() > 0) {
             return $this->sendError($this->__('No CMS-block ID given'));
         }
 
         // Load the attribute-value
         $attribute = $translator->getData('attribute');
         $text = $block->getData($attribute);
-        if(empty($text)) {
+
+        if (empty($text)) {
             return $this->sendError($this->__('No block-data found for attribute %s', $attribute));
         }
         $translator->setData('text', $text);
 
         // Make the request to the API
         $this->translate();
+        return null;
     }
 
     /**
@@ -164,7 +171,7 @@ class Yireo_BingTranslate_IndexController extends Mage_Adminhtml_Controller_Acti
      *
      * @access protected
      * @param null
-     * @return null
+     * @return string
      */
     protected function preload()
     {
@@ -175,13 +182,24 @@ class Yireo_BingTranslate_IndexController extends Mage_Adminhtml_Controller_Acti
         $store = $this->getRequest()->getParam('store');
 
         // Sanity checks
-        if(!$id > 0) return $this->sendError($this->__('Wrong value for parameter id: %s', $id));
-        if(empty($attribute)) return $this->sendError($this->__('No value for parameter attribute'));
-        if(empty($fromLang)) return $this->sendError($this->__('No value for parameter from'));
-        if(empty($toLang)) return $this->sendError($this->__('No value for parameter to'));
+        if (!$id > 0) {
+            return $this->sendError($this->__('Wrong value for parameter id: %s', $id));
+        }
+
+        if (empty($attribute)) {
+            return $this->sendError($this->__('No value for parameter attribute'));
+        }
+
+        if (empty($fromLang)) {
+            return $this->sendError($this->__('No value for parameter from'));
+        }
+
+        if (empty($toLang)) {
+            return $this->sendError($this->__('No value for parameter to'));
+        }
 
         // Set the source language to empty, if it is the same as the destination language
-        if($fromLang == $toLang) {
+        if ($fromLang == $toLang) {
             $fromLang = null;
         }
 
@@ -190,7 +208,7 @@ class Yireo_BingTranslate_IndexController extends Mage_Adminhtml_Controller_Acti
         $clientSecret = Mage::helper('bingtranslate')->getClientSecret();
 
         // Check for the API-key or client-ID plus client-secret
-        if(Mage::helper('bingtranslate')->hasApiSettings() == false) {
+        if (Mage::helper('bingtranslate')->hasApiSettings() == false) {
             return $this->sendError($this->__('No API-details configured yet'));
         }
 
@@ -203,9 +221,18 @@ class Yireo_BingTranslate_IndexController extends Mage_Adminhtml_Controller_Acti
         $translator->setData('store', $store);
         $translator->setData('clientId', $clientId);
         $translator->setData('clientSecret', $clientSecret);
+
         return true;
     }
 
+
+    /**
+     * Method to return the translator object
+     *
+     * @access public
+     * @param null
+     * @return Yireo_BingTranslate_Model_Translator
+     */
     public function getTranslator()
     {
         return Mage::getSingleton('bingtranslate/translator');
@@ -213,44 +240,50 @@ class Yireo_BingTranslate_IndexController extends Mage_Adminhtml_Controller_Acti
 
     /**
      * Method to call upon the Bing API
+     *
+     * @access protected
+     * @param null
+     * @return string
      */
     protected function translate()
     {
         $translator = $this->getTranslator();
         $text = $translator->translate();
 
-        if($translator->hasApiError()) {
+        if ($translator->hasApiError()) {
             return $this->sendError($translator->getApiError());
         }
 
         return $this->sendTranslation($text);
     }
 
-    /** 
+    /**
      * Helper method to send a specific error
      *
      * @access protected
      * @param string $message
-     * @return null
+     * @return mixed
      */
-    protected function sendError($message = null) 
+    protected function sendError($message = null)
     {
         $result = array('error' => $message);
         echo json_encode($result);
+
         return false;
     }
 
-    /** 
+    /**
      * Helper method to send the translation
      *
      * @access protected
      * @param string $translation
-     * @return null
+     * @return mixed
      */
-    protected function sendTranslation($translation = null) 
+    protected function sendTranslation($translation = null)
     {
         $result = array('translation' => $translation);
         echo json_encode($result);
-        return;
+
+        return null;
     }
 }

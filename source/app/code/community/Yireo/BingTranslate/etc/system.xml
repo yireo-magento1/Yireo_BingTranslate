@@ -5,7 +5,7 @@
  *
  * @package     Yireo_BingTranslate
  * @author      Yireo (http://www.yireo.com/)
- * @copyright   Copyright (C) 2014 Yireo (http://www.yireo.com/)
+ * @copyright   Copyright 2015 Yireo (http://www.yireo.com/)
  * @license     Open Source License (OSL v3)
  */
 -->
@@ -30,6 +30,7 @@
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                         </client_id>
+
                         <client_secret translate="label">
                             <label>Azure Client Secret</label>
                             <comment><![CDATA[See <a href="https://datamarket.azure.com/developer/applications">datamarket.azure.com/developer</a>]]></comment>
@@ -39,6 +40,7 @@
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                         </client_secret>
+
                         <buttonlabel translate="label">
                             <label>Button format</label>
                             <comment><![CDATA[Format of button-label ($FROM and $TO)]]></comment>
@@ -48,6 +50,7 @@
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                         </buttonlabel>
+
                         <langcode translate="label">
                             <label>Manual language code</label>
                             <comment>(Optional) <![CDATA[http://msdn.microsoft.com/en-us/library/hh456380.aspx]]></comment>
@@ -57,6 +60,7 @@
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                         </langcode>
+
                         <only_supported_languages translate="label">
                             <label>Only supported languages</label>
                             <comment>See <![CDATA[http://msdn.microsoft.com/en-us/library/hh456380.aspx]]></comment>
@@ -67,6 +71,7 @@
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                         </only_supported_languages>
+
                         <overwrite_existing translate="label">
                             <label>Overwrite existing values</label>
                             <comment>When using the Product API, overwrite existing values</comment>
@@ -77,6 +82,7 @@
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                         </overwrite_existing>
+
                         <bork translate="label">
                             <label>Bork Debugging</label>
                             <frontend_type>select</frontend_type>

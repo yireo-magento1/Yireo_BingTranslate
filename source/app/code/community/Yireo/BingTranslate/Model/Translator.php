@@ -4,7 +4,7 @@
  *
  * @package     Yireo_BingTranslate
  * @author      Yireo (http://www.yireo.com/)
- * @copyright   Copyright (C) 2014 Yireo (http://www.yireo.com/)
+ * @copyright   Copyright 2015 Yireo (http://www.yireo.com/)
  * @license     Open Source License (OSL v3)
  */
 
@@ -13,14 +13,34 @@
  */
 class Yireo_BingTranslate_Model_Translator extends Mage_Core_Model_Abstract
 {
+    /**
+     * String containing the API URL
+     *
+     * @var string
+     */
     protected $apiUrl = 'http://api.microsofttranslator.com/v2/Http.svc/Translate';
 
+    /**
+     * Container for possible API errors
+     *
+     * @var null
+     */
     protected $apiError = null;
 
+    /**
+     * String containing the translated content received from the API
+     *
+     * @var null
+     */
     protected $apiTranslation = null;
 
     /**
      * Method to call upon the Bing API
+     *
+     * @param string $text
+     * @param string $fromLang
+     * @param string $toLang
+     * @return text
      */
     public function translate($text = null, $fromLang = null, $toLang = null)
     {
@@ -159,15 +179,18 @@ class Yireo_BingTranslate_Model_Translator extends Mage_Core_Model_Abstract
     protected function getAccessToken()
     {
         // Use the token in the cookie if available
-        if(!empty($_COOKIE['bingtranslate_token'])) {
-            return $_COOKIE['bingtranslate_token'];
+        $cookieToken = Mage::getModel('core/cookie')->getData('bingtranslate_token');
+        if(!empty($cookieToken)) {
+            return $cookieToken;
         }
 
         // If client_id and client_secret empty, return nothing
         $clientId = Mage::helper('bingtranslate')->getClientId();
         $clientSecret = Mage::helper('bingtranslate')->getClientSecret();
 
-        if(empty($clientId) || empty($clientSecret)) return null;
+        if(empty($clientId) || empty($clientSecret)) {
+            return null;
+        }
 
         // Windows Azure OAuth URL
         $url = 'https://datamarket.accesscontrol.windows.net/v2/OAuth2-13/';
@@ -201,7 +224,9 @@ class Yireo_BingTranslate_Model_Translator extends Mage_Core_Model_Abstract
         }
 
         if (!empty($data->access_token)) {
-            if (headers_sent() == false) setcookie('bingtranslate_token', $data->access_token, time() + (60*5));
+            if (headers_sent() == false) {
+                Mage::getModel('core/cookie')->setData('bingtranslate_token', $data->access_token);
+            }
             return $data->access_token;
         }
 
@@ -209,6 +234,11 @@ class Yireo_BingTranslate_Model_Translator extends Mage_Core_Model_Abstract
         return false;
     }
 
+    /**
+     * Method to check whether there has been an error in the API
+     *
+     * @return bool
+     */
     public function hasApiError()
     {
         if(!empty($this->apiError)) {
@@ -217,22 +247,49 @@ class Yireo_BingTranslate_Model_Translator extends Mage_Core_Model_Abstract
         return false;
     }
 
+    /**
+     * Method to return the API error, if any
+     *
+     * @return null
+     */
     public function getApiError()
     {
         return $this->apiError;
     }
 
+    /**
+     * Method to return the API translation
+     *
+     * @return string
+     */
     public function getApiTranslation()
     {
         return $this->apiTranslation;
     }
 
+    /**
+     * Method to translate a certain text
+     *
+     * @param $string
+     * @param null $variable1
+     * @param null $variable2
+     * @return string
+     */
     public function __($string, $variable1 = null, $variable2 = null)
     {
         if(is_array($string)) $string = explode('; ', $string);
         return Mage::helper('bingtranslate')->__($string, $variable1, $variable2);
     }
 
+    /**
+     * Method to write some debugging to a log
+     *
+     * @access public
+     * @param $string
+     * @param $fromLang
+     * @param $toLang
+     * @return void
+     */
     public function debugLog($string, $fromLang, $toLang)
     {
         if(!is_dir(BP.DS.'var'.DS.'log')) @mkdir(BP.DS.'var'.DS.'log');
@@ -242,6 +299,13 @@ class Yireo_BingTranslate_Model_Translator extends Mage_Core_Model_Abstract
         file_put_contents($tmp_file, $string."\n", FILE_APPEND);
     }
 
+    /**
+     * Method to borkify a given text
+     *
+     * @access public
+     * @param $text
+     * @return mixed|string
+     */
     public function bork($text)
     {
         $textBlocks = preg_split( '/(%[^ ]+)/', $text, -1, PREG_SPLIT_DELIM_CAPTURE );
@@ -274,6 +338,7 @@ class Yireo_BingTranslate_Model_Translator extends Mage_Core_Model_Abstract
         $text = implode( '', $newTextBlocks );
         $text = preg_replace( '/([:.?!])(.*)/', '\\2\\1', $text );
         $text .= ' Bork bork.';
+
         return $text;
     }
 }

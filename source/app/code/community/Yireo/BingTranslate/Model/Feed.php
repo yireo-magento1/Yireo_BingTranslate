@@ -4,13 +4,13 @@
  *
  * @author Yireo
  * @package Yireo_Common
- * @copyright Copyright 2014
+ * @copyright Copyright 2015
  * @license Open Source License (OSL v3) (OSL)
  * @link http://www.yireo.com
  */
 
-/*
- * Feed Model
+/**
+ * Class Yireo_BingTranslate_Model_Feed
  */
 class Yireo_BingTranslate_Model_Feed extends Mage_AdminNotification_Model_Feed
 {
@@ -22,6 +22,8 @@ class Yireo_BingTranslate_Model_Feed extends Mage_AdminNotification_Model_Feed
     /**
      * Return the feed URL
      *
+     * @access public
+     * @param null
      * @return string
      */
     public function getFeedUrl() 
@@ -32,7 +34,9 @@ class Yireo_BingTranslate_Model_Feed extends Mage_AdminNotification_Model_Feed
     /**
      * Try to update feed
      *
-     * @return mixed
+     * @access public
+     * @param null
+     * @return bool
      */
     public function updateIfAllowed()
     {
@@ -53,11 +57,14 @@ class Yireo_BingTranslate_Model_Feed extends Mage_AdminNotification_Model_Feed
 
         // Update the feed
         $this->checkUpdate();
+        return true;
     }
 
     /**
      * Override the original method
      *
+     * @access public
+     * @param null
      * @return SimpleXMLElement
      */
     public function getFeedData()

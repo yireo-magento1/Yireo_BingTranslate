@@ -4,7 +4,7 @@
  *
  * @package     Yireo_BingTranslate
  * @author      Yireo (http://www.yireo.com/)
- * @copyright   Copyright (C) 2014 Yireo (http://www.yireo.com/)
+ * @copyright   Copyright 2015 Yireo (http://www.yireo.com/)
  * @license     Open Source License (OSL v3)
  */
 
@@ -13,11 +13,17 @@
  */
 class Yireo_BingTranslate_Helper_Observer extends Mage_Core_Helper_Abstract
 {
-    /*
+    /**
      * Helper method to fetch the button-HTML
      *
+     * @access public
+     * @param int $id
+     * @param string $label
+     * @param bool $disabled
+     * @param array $arguments
+     * @return string
      */
-    public function button($id, $label, $disabled = false, $arguments)
+    public function button($id, $label, $disabled = false, $arguments = array())
     {
         // Convert the button-arguments into a JavaScript-ready array
         $jsArgs = array();
@@ -28,22 +34,26 @@ class Yireo_BingTranslate_Helper_Observer extends Mage_Core_Helper_Abstract
         // Construct the button HTML-code
         $html = Mage::getSingleton('core/layout')
             ->createBlock('adminhtml/widget_button', '', array(
-            'label' => Mage::helper('bingtranslate')->__($label),
-            'type' => 'button',
-            'disabled' => $disabled,
-            'class' => ($disabled) ? 'bingtranslate_button disabled' : 'bingtranslate_button',
-            'style' => 'margin-right:5px;margin-top:5px;',
-            'id' => 'bingtranslate_button_'.$id,
-            'onclick' => 'bingtranslate('.implode(',', $jsArgs).')'
-        ))->toHtml();
+                'label' => Mage::helper('bingtranslate')->__($label),
+                'type' => 'button',
+                'disabled' => $disabled,
+                'class' => ($disabled) ? 'bingtranslate_button disabled' : 'bingtranslate_button',
+                'style' => 'margin-right:5px;margin-top:5px;',
+                'id' => 'bingtranslate_button_' . $id,
+                'onclick' => 'bingtranslate(' . implode(',', $jsArgs) . ')'
+            ))->toHtml();
 
         return $html;
     }
 
-    /*
-    * Helper method to fetch the button-HTML
-    *
-    */
+    /**
+     * Helper method to fetch the button-HTML
+     *
+     * @access public
+     * @param string $attribute_code
+     * @param string $html_id
+     * @return string
+     */
     public function script($attribute_code, $html_id)
     {
         // Construct the button JavaScript-code

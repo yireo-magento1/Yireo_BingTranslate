@@ -4,7 +4,7 @@
  *
  * @package     Yireo_BingTranslate
  * @author      Yireo (http://www.yireo.com/)
- * @copyright   Copyright (C) 2014 Yireo (http://www.yireo.com/)
+ * @copyright   Copyright 2015 Yireo (http://www.yireo.com/)
  * @license     Open Source License (OSL v3)
  */
 
@@ -13,12 +13,12 @@
  */
 class Yireo_BingTranslate_Helper_Data extends Mage_Core_Helper_Abstract
 {
-    /*
+    /**
      * Switch to determine whether this extension is enabled or not
      * 
      * @access public
      * @param null
-     * @return string
+     * @return bool
      */
     public function enabled()
     {
@@ -26,12 +26,12 @@ class Yireo_BingTranslate_Helper_Data extends Mage_Core_Helper_Abstract
         return true;
     }
 
-    /*
+    /**
      * Check whether the API-details are configured
      * 
      * @access public
      * @param null
-     * @return string
+     * @return bool
      */
     public function hasApiSettings()
     {
@@ -43,7 +43,7 @@ class Yireo_BingTranslate_Helper_Data extends Mage_Core_Helper_Abstract
         return true;
     }
 
-    /*
+    /**
      * Return the configured client-ID
      * 
      * @access public
@@ -55,19 +55,17 @@ class Yireo_BingTranslate_Helper_Data extends Mage_Core_Helper_Abstract
         return Mage::getStoreConfig('catalog/bingtranslate/client_id');
     }
 
-    /*
+    /**
      * Return the configured client-secret
      * 
-     * @access public
-     * @param null
-     * @return string
+     * @return mixed
      */
     public function getClientSecret()
     {
         return Mage::getStoreConfig('catalog/bingtranslate/client_secret');
     }
 
-    /*
+    /**
      * Return the text for the button label
      * 
      * @access public
@@ -82,7 +80,7 @@ class Yireo_BingTranslate_Helper_Data extends Mage_Core_Helper_Abstract
         return $label;
     }
 
-    /*
+    /**
      * Return the source language
      * 
      * @access public
@@ -96,7 +94,7 @@ class Yireo_BingTranslate_Helper_Data extends Mage_Core_Helper_Abstract
         return $from_language;
     }
 
-    /*
+    /**
      * Return the title of the source language
      * 
      * @access public
@@ -110,7 +108,7 @@ class Yireo_BingTranslate_Helper_Data extends Mage_Core_Helper_Abstract
         return $from_title;
     }
 
-    /*
+    /**
      * Return the destination language
      * 
      * @access public
@@ -128,7 +126,7 @@ class Yireo_BingTranslate_Helper_Data extends Mage_Core_Helper_Abstract
         return $toLanguage;
     }
 
-    /*
+    /**
      * Return the title of the destination language
      * 
      * @access public
@@ -143,7 +141,7 @@ class Yireo_BingTranslate_Helper_Data extends Mage_Core_Helper_Abstract
         return $to_title;
     }
     
-    /*
+    /**
      * Check whether the language-code is supported
      * 
      * @access public
@@ -167,7 +165,7 @@ class Yireo_BingTranslate_Helper_Data extends Mage_Core_Helper_Abstract
         return false;
     } 
     
-    /*
+    /**
      * Get supported languages
      * 
      * @access public
@@ -219,7 +217,7 @@ class Yireo_BingTranslate_Helper_Data extends Mage_Core_Helper_Abstract
         );
     }
 
-    /*
+    /**
      * Return the title of the destination language
      * 
      * @access public
