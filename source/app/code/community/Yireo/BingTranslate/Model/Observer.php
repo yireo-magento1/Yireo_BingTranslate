@@ -51,6 +51,7 @@ class Yireo_BingTranslate_Model_Observer extends Yireo_BingTranslate_Model_Obser
         // Fetch the data ID (either category ID or product ID) from the URL
         $data_id = Mage::app()->getRequest()->getParam('id');
         if (empty($data_id)) $data_id = Mage::app()->getRequest()->getParam('page_id');
+        if (empty($data_id)) $data_id = Mage::app()->getRequest()->getParam('block_id');
 
         // If this data-type is unknown, do not display anything
         if ($data_type == 'unknown') {
@@ -106,5 +107,72 @@ class Yireo_BingTranslate_Model_Observer extends Yireo_BingTranslate_Model_Obser
     {
         // Run the feed
         Mage::getModel('bingtranslate/feed')->updateIfAllowed();
+    }
+
+    /**
+     * Method fired on the event <content_translate_after>
+     *
+     * @access public
+     * @param Varien_Event_Observer $observer
+     * @return Yireo_BingTranslate_Model_Observer
+     */
+    public function contentTranslateAfter($observer)
+    {
+        $text = $observer->getEvent()->getText();
+        $fromLang = $observer->getEvent()->getFrom();
+        $toLang = $observer->getEvent()->getTo();
+
+        $translationFolder = Mage::getSingleton('core/design_package')->getBaseDir(
+            array('_area' => 'adminhtml', '_type' => 'translations')
+        );
+
+        $translationFiles = array(
+            'translate_' . $fromLang . '_' . $toLang . '.csv',
+            'translate_' . $toLang . '.csv',
+            $fromLang . '_' . $toLang . '.csv',
+            $toLang . '.csv',
+        );
+
+        foreach ($translationFiles as $translationFile) {
+            if (file_exists($translationFolder . '/' . $translationFile)) {
+                $translationFile = $translationFolder . '/' . $translationFile;
+            } else {
+                $translationFile = null;
+            }
+        }
+
+        if (empty($translationFile)) {
+            return $this;
+        }
+
+        $translations = array();
+        if (($handle = fopen($translationFile, 'r')) !== FALSE) {
+            while (($data = fgetcsv($handle, 1000, ',')) !== FALSE) {
+                if (empty($data[0])) continue;
+                if (empty($data[1])) continue;
+                $translations[$data[0]] = $data[1];
+            }
+        }
+        fclose($handle);
+
+        foreach ($translations as $translationFrom => $translationTo) {
+            $text = str_replace($translationFrom, $translationTo, $text);
+        }
+
+        $observer->getEvent()->setData('text', $text);
+        return $this;
+    }
+
+    public function coreBlockAbstractPrepareLayoutBefore($observer)
+    {
+        $block = $observer->getEvent()->getBlock();
+        $blockClass = 'Mage_Adminhtml_Block_Widget_Grid_Massaction';
+
+        if ($block instanceof $blockClass && $block->getRequest()->getControllerName() == 'catalog_product') {
+            $block->addItem('bingtranslate', array(
+                'label' => 'Translate via BingTranslate',
+                'url' => Mage::helper('adminhtml')->getUrl('bingtranslate/index/batch', array('type' => 'product')),
+            ));
+        }
     }
 }

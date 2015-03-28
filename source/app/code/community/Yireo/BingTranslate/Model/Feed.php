@@ -26,9 +26,9 @@ class Yireo_BingTranslate_Model_Feed extends Mage_AdminNotification_Model_Feed
      * @param null
      * @return string
      */
-    public function getFeedUrl() 
+    public function getFeedUrl()
     {
-        return Mage::getStoreConfigFlag(self::XML_USE_HTTPS_PATH) ? 'https://' : 'http://'.$this->customFeedUrl;
+        return Mage::getStoreConfigFlag(self::XML_USE_HTTPS_PATH) ? 'https://' : 'http://' . $this->customFeedUrl;
     }
 
     /**
@@ -51,7 +51,7 @@ class Yireo_BingTranslate_Model_Feed extends Mage_AdminNotification_Model_Feed
         }
 
         // Is the feed disabled?
-        if((bool)Mage::getStoreConfig('yireo/common/disabled')) {
+        if ((bool)Mage::getStoreConfig('yireo/common/disabled')) {
             return false;
         }
 

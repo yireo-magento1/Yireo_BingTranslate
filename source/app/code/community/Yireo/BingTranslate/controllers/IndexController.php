@@ -17,6 +17,68 @@
 class Yireo_BingTranslate_IndexController extends Mage_Adminhtml_Controller_Action
 {
     /**
+     * Common method
+     *
+     * @access protected
+     * @param null
+     * @return Yireo_BingTranslate_IndexController
+     */
+    protected function _initAction()
+    {
+        $this->loadLayout()
+            ->_setActiveMenu('system/tools/bingtranslate')
+            ->_addBreadcrumb(Mage::helper('adminhtml')->__('System'), Mage::helper('adminhtml')->__('System'))
+            ->_addBreadcrumb(Mage::helper('adminhtml')->__('Tools'), Mage::helper('adminhtml')->__('Tools'))
+            ->_addBreadcrumb(Mage::helper('adminhtml')->__('Bing Translate'), Mage::helper('adminhtml')->__('Bing Translate'));
+        return $this;
+    }
+
+    /**
+     * Batch page
+     *
+     * @access public
+     * @param null
+     * @return null
+     */
+    public function batchAction()
+    {
+        $this->_initAction()
+            ->_addContent($this->getLayout()->createBlock('bingtranslate/adminhtml_batch'))
+            ->renderLayout();
+    }
+
+    /**
+     * Translate a specific product
+     *
+     * @access public
+     * @param null
+     * @return null
+     */
+    public function translateProductAction()
+    {
+        $data = explode('|', $this->getRequest()->getParam('data'));
+        $productId = $data[0];
+        $storeId = $data[1];
+        $attributeCode = $data[2];
+
+        $product = Mage::getModel('catalog/product')->load($productId);
+        if (!$product->getId() > 0) {
+            return $this->sendError($this->__('No product loaded for ID ' . $productId));
+        }
+
+        $store = Mage::getModel('core/store')->load($storeId);
+        if (!$store->getId() > 0) {
+            return $this->sendError($this->__('No store loaded for ID ' . $storeId));
+        }
+
+        $translator = Mage::getModel('bingtranslate/product');
+        $translator->translate($product, array($attributeCode), array($store));
+        $charCount = $translator->getCharCount();
+
+        return $this->sendMessage($this->__('Translated attribute "%s" for SKU "%s" in Store View "%s" (%s characters)', $attributeCode, $product->getSku(), $store->getCode(), $charCount));
+    }
+
+    /**
      * AJAX callback for products
      *
      * @access public
@@ -239,7 +301,7 @@ class Yireo_BingTranslate_IndexController extends Mage_Adminhtml_Controller_Acti
     }
 
     /**
-     * Method to call upon the Bing API
+     * Method to call upon the API
      *
      * @access protected
      * @param null
@@ -255,6 +317,20 @@ class Yireo_BingTranslate_IndexController extends Mage_Adminhtml_Controller_Acti
         }
 
         return $this->sendTranslation($text);
+    }
+
+    /**
+     * Helper method to send a success
+     *
+     * @access protected
+     * @param string $message
+     * @return null
+     */
+    protected function sendMessage($message = null)
+    {
+        $result = array('message' => $message);
+        echo json_encode($result);
+        return true;
     }
 
     /**

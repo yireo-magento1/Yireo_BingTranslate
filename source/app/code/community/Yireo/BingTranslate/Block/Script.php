@@ -14,37 +14,26 @@
 class Yireo_BingTranslate_Block_Script extends Mage_Core_Block_Template
 {
     /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        parent::__construct();
-
-        $this->setData('area', 'adminhtml');
-    }
-
-    /*
-     * Return a specific URL
-     * 
-     * @access public
-     * @param string $route
-     * @param array $params
-     * @return string
-     */
-    public function getUrl($route = '', $params = array())
-    {
-        return Mage::getModel('adminhtml/url')->getUrl($route, $params);
-    }
-
-    /*
-     * Return the configured API key
-     * 
+     * Return the customization ID
+     *
      * @access public
      * @param null
      * @return string
      */
-    public function getAjaxUrl()
+    public function getCustomizationId()
     {
-        return $this->getUrl('bingtranslate/index/' . $this->getPageType());
+        return Mage::helper('bingtranslate')->getCustomizationId();
+    }
+
+    /**
+     * Allow translation
+     *
+     * @access public
+     * @param null
+     * @return bool
+     */
+    public function allowTranslation()
+    {
+        return true; // @todo: Disable on specific pages?
     }
 }

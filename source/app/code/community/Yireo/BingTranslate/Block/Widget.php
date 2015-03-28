@@ -13,79 +13,76 @@
  */
 class Yireo_BingTranslate_Block_Widget extends Mage_Core_Block_Template
 {
-    /**
-     * Constructor
+    /*
+     * Return the inline layout
+     * 
+     * @access public
+     * @param null
+     * @return string (SIMPLE|HORIZONTAL|null
      */
-    public function __construct()
+    public function getInlineLayout()
     {
-        parent::__construct();
-        $this->setData('area', 'adminhtml');
+        return null; // @todo
     }
 
     /*
-     * Return the current source-language
+     * Return the current page language
+     * 
+     * @access public
+     * @param null
+     * @return string (en)
+     */
+    public function getPageLanguage()
+    {
+        return null; // @todo
+    }
+
+    /*
+     * Return the included languages
+     * 
+     * @access public
+     * @param null
+     * @return array
+     */
+    public function getIncludedLanguages()
+    {
+        return array(); // @todo
+    }
+
+    /*
+     * Return whether this is a multiple language page
+     * 
+     * @access public
+     * @param null
+     * @return bool
+     */
+    public function isMultilanguagePage()
+    {
+        return false; // @todo
+    }
+
+    /*
+     * Return the GA ID
      * 
      * @access public
      * @param null
      * @return string
      */
-    public function getSourceLanguage()
+    public function getGaId()
     {
-        return Mage::helper('bingtranslate')->getFromLanguage();
+        return null; // @todo: Fetch from Mage_BingAnalytics module
     }
 
     /*
-    * Return the current destination-language
-    *
-    * @access public
-    * @param null
-    * @return string
-    */
-    public function getDestinationLanguage($stripped = true)
-    {
-        $code = Mage::helper('bingtranslate')->getToLanguage();
-        if ($stripped) {
-            return preg_replace('/\-(.*)$/', '', $code);
-        } else {
-            return $code;
-        }
-    }
-
-    /*
-     * Return a list of languages
-     *
+     * Remove the 
+     * 
      * @access public
      * @param null
-     * @return array
+     * @return bool
      */
-    public function getLanguages()
+    public function removeAttribution()
     {
-        $options = array();
-
-        $locale = Mage::getModel('core/locale')->getLocale();
-        $locales = $locale->getLocaleList();
-        $languages = $locale->getTranslationList('language', $locale);
-
-        foreach ($locales as $code => $active) {
-
-            if (strstr($code, '_')) continue;
-
-            if (!isset($languages[$code])) {
-                continue;
-            }
-
-            if (Mage::helper('bingtranslate')->isSupportedLanguage($code) == false) {
-                continue;
-            }
-
-            $label = $languages[$code];
-
-            $options[] = array(
-                'value' => $code,
-                'label' => $label . ' [' . $code . ']',
-            );
-        }
-
-        return $options;
+        return false;
     }
+
 }

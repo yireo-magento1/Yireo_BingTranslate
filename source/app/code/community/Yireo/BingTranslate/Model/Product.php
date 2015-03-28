@@ -14,6 +14,13 @@
 class Yireo_BingTranslate_Model_Product extends Mage_Core_Model_Abstract
 {
     /**
+     * Allow translation
+     *
+     * @var boolean
+     */
+    protected $allowTranslation = true;
+
+    /**
      * Counter of characters
      *
      * @var int
@@ -27,12 +34,18 @@ class Yireo_BingTranslate_Model_Product extends Mage_Core_Model_Abstract
      * @param $productAttributes
      * @param $stores
      * @param int $delay
-     * @param bool $translate
+     * @param bool $allowTranslation
+     * @return null
      */
-    public function translate($product, $productAttributes, $stores, $delay = 0, $translate = true)
+    public function translate($product, $productAttributes, $stores, $delay = 0, $allowTranslation = null)
     {
         // Reset some values
         $this->charCount = 0;
+
+        // Set the flag for translation
+        if (is_bool($allowTranslation)) {
+            $this->allowTranslation = $allowTranslation;
+        }
 
         // Load the entire product
         $product = Mage::getModel('catalog/product')->load($product->getId());
@@ -45,10 +58,10 @@ class Yireo_BingTranslate_Model_Product extends Mage_Core_Model_Abstract
         $parentLanguage = preg_replace('/_(.*)/', '', $parentLocale);
 
         // Loop through the stores
-        foreach($stores as $store) {
+        foreach ($stores as $store) {
 
-            if(!is_object($store)) {
-                if(is_numeric($store)) {
+            if (!is_object($store)) {
+                if (is_numeric($store)) {
                     $store = Mage::getModel('core/store')->load($store);
                 } else {
                     $store = Mage::helper('bingtranslate')->getStoreByCode($store);
@@ -61,7 +74,11 @@ class Yireo_BingTranslate_Model_Product extends Mage_Core_Model_Abstract
             $currentLanguage = Mage::helper('bingtranslate')->getToLanguage($store);
 
             // Loop through the attributes
-            foreach($productAttributes as $productAttribute) {
+            foreach ($productAttributes as $productAttribute) {
+
+                // Log
+                $log = Mage::helper('bingtranslate')->__('Translating attribute "%s" of "%s" for store "%s"', $productAttribute, $product->getSku(), $store->getName());
+                Mage::helper('bingtranslate')->log($log);
 
                 // Reset some values
                 $translatedValue = null;
@@ -73,24 +90,31 @@ class Yireo_BingTranslate_Model_Product extends Mage_Core_Model_Abstract
                 // Sanity checks
                 $productValue = trim($productValue);
                 $currentValue = trim($currentValue);
-                if(empty($productValue)) continue;
-                
+
+                if (empty($productValue)) {
+                    Mage::helper('bingtranslate')->log(Mage::helper('bingtranslate')->__('Empty product value, so skipping'));
+                    continue;
+                }
+
                 // Overwrite existing values
-                if($productValue != $currentValue) {
-                    if((bool)Mage::getStoreConfig('catalog/bingtranslate/overwrite_existing') == false) {
+                if ($productValue != $currentValue) {
+                    if ((bool)Mage::getStoreConfig('catalog/bingtranslate/overwrite_existing') == false) {
+                        Mage::helper('bingtranslate')->log(Mage::helper('bingtranslate')->__('Existing value, so skipping'));
                         continue;
                     }
                 }
 
                 // Translate the value
-                if($translate == true) {
+                if ($this->allowTranslation == true) {
+
                     $translatedValue = $translator->translate($productValue, $parentLanguage, $currentLanguage);
                     $apiError = $translator->getApiError();
-                    if(!empty($apiError)) {
-                        echo Mage::helper('bingtranslate')->__('API-error for %s: %s', $product->getSku(), $apiError)."\n";
+
+                    if (!empty($apiError)) {
+                        Mage::helper('bingtranslate')->log(Mage::helper('bingtranslate')->__('API-error for %s: %s', $product->getSku(), $apiError));
                     }
 
-                    if(!empty($translatedValue)) {
+                    if (!empty($translatedValue)) {
                         $product->setData($productAttribute, $translatedValue);
                         $product->getResource()->saveAttribute($product, $productAttribute);
                     }
@@ -101,10 +125,13 @@ class Yireo_BingTranslate_Model_Product extends Mage_Core_Model_Abstract
             }
 
             // Resave entire product
-            if($translate == true) {
+            if ($this->allowTranslation == true) {
                 $product->save();
             }
-            if($delay > 0) sleep((int)$delay);
+
+            if ($delay > 0) {
+                sleep((int)$delay);
+            }
         }
     }
 
@@ -116,5 +143,16 @@ class Yireo_BingTranslate_Model_Product extends Mage_Core_Model_Abstract
     public function getCharCount()
     {
         return $this->charCount;
+    }
+
+    /**
+     * Method to toggle the flag which allows translation
+     *
+     * @param bool $allowTranslation
+     * @return bool
+     */
+    public function allowTranslation($allowTranslation)
+    {
+        return $this->allowTranslation = (bool)$allowTranslation;
     }
 }

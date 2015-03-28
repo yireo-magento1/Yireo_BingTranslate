@@ -44,8 +44,20 @@ class Yireo_BingTranslate_Model_Translator extends Mage_Core_Model_Abstract
      */
     public function translate($text = null, $fromLang = null, $toLang = null)
     {
+        // Return empty text
+        $text = trim($text);
+        if (empty($text)) {
+            return '';
+        }
+
+        // Disable translating
+        if (Mage::getStoreConfig('catalog/bingtranslate/skip_translation')) {
+            $this->apiError = $this->__('API-translation is disabled through setting');
+            return false;
+        }
+
         // Bork debugging
-        if(Mage::getStoreConfig('catalog/bingtranslate/bork')) {
+        if (Mage::getStoreConfig('catalog/bingtranslate/bork')) {
             $this->apiTranslation = $this->bork($text);
             return $this->apiTranslation;
         }
@@ -53,22 +65,25 @@ class Yireo_BingTranslate_Model_Translator extends Mage_Core_Model_Abstract
         // Demo
         $clientId = Mage::helper('bingtranslate')->getClientId();
         $clientSecret = Mage::helper('bingtranslate')->getClientSecret();
-        if(strtolower($clientId) == 'demo' || strtolower($clientSecret) == 'demo') {
+        if (strtolower($clientId) == 'demo' || strtolower($clientSecret) == 'demo') {
             $this->apiError = $this->__('API-translation is disabled for this demo');
             return false;
         }
 
         // Load some variables
-        if(empty($text)) $text = $this->getData('text');
-        if(empty($fromLang)) $fromLang = $this->getData('from');
-        if(empty($toLang)) $toLang = $this->getData('toLang');
-        if($toLang == 'auto') $toLang = null;
-        
+        if (empty($text)) $text = $this->getData('text');
+        if (empty($fromLang)) $fromLang = $this->getData('from');
+        if (empty($toLang)) $toLang = $this->getData('toLang');
+        if ($toLang == 'auto') $toLang = null;
+
         // Skip empty to-language
-        if(empty($toLang)) {
+        if (empty($toLang)) {
             $this->apiError = $this->__('Empty or unsupported destination-language');
             return false;
         }
+
+        // Dispatch an event
+        Mage::dispatchEvent('content_translate_before', array('text' => &$text, 'from' => $fromLang, 'to' => $toLang));
 
         $headers = array();
 
@@ -81,12 +96,12 @@ class Yireo_BingTranslate_Model_Translator extends Mage_Core_Model_Abstract
         );
 
         $url = $this->apiUrl;
-        $url .= '?'.http_build_query($fields);
+        $url .= '?' . http_build_query($fields);
 
         // Add extra Authorization-header
         $accessToken = $this->getAccessToken();
-        if(!empty($accessToken)) {
-            $headers[] = 'Authorization: Bearer '.$accessToken;
+        if (!empty($accessToken)) {
+            $headers[] = 'Authorization: Bearer ' . $accessToken;
         } else {
             return false;
         }
@@ -99,28 +114,28 @@ class Yireo_BingTranslate_Model_Translator extends Mage_Core_Model_Abstract
         curl_setopt($ch, CURLOPT_USERAGENT, 'Magento/PHP');
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        if(!empty($headers)) curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        if (!empty($headers)) curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
         $result = curl_exec($ch);
 
         // Detect an empty CURL response
-        if(empty($result)) {
+        if (empty($result)) {
             $this->apiError = $this->__('Empty response');
-            $this->apiError .= '['.$this->__('from %s to %s', $fromLang, $toLang).']';
+            $this->apiError .= '[' . $this->__('from %s to %s', $fromLang, $toLang) . ']';
             return false;
         }
 
         // Detect non-XML feedback
-        if(!preg_match('/^</', $result)) {
+        if (!preg_match('/^</', $result)) {
             $this->apiError = $this->__('Not an XML response');
-            $this->apiError .= '['.$this->__('from %s to %s', $fromLang, $toLang).']';
+            $this->apiError .= '[' . $this->__('from %s to %s', $fromLang, $toLang) . ']';
             return false;
         }
 
         // Detect HTML feedback
-        if(preg_match('/\<\/html\>$/', $result) || preg_match('/\ style=\"/', $result)) {
+        if (preg_match('/\<\/html\>$/', $result) || preg_match('/\ style=\"/', $result)) {
 
             // Try to extract the message from this HTML
-            if(preg_match('/<p>Message:(.*)<\/p>/m', $result, $match)) {
+            if (preg_match('/<p>Message:(.*)<\/p>/m', $result, $match)) {
                 $this->apiError = $this->__('HTML response: %s', trim(strip_tags($match[1])));
                 return false;
             }
@@ -133,7 +148,7 @@ class Yireo_BingTranslate_Model_Translator extends Mage_Core_Model_Abstract
         // Fetch the XML-data
         try {
             $xml = new SimpleXMLElement($result);
-        } catch(Exception $e) {
+        } catch (Exception $e) {
 
             $this->debugLog($e->getMessage(), $fromLang, $toLang);
             $this->apiError = $this->__('Response is HTML, not XML [saved in %s]', 'var/log/bingtranslate.log');
@@ -141,20 +156,24 @@ class Yireo_BingTranslate_Model_Translator extends Mage_Core_Model_Abstract
         }
 
         // Parse the XML-data
-        if(is_object($xml)) {
+        if (is_object($xml)) {
             $translation = trim((string)$xml);
 
             // A valid translation was found
-            if(!empty($translation)) {
+            if (!empty($translation)) {
 
                 // Detect whether the translation was the same or not
-                if($translation == $text) {
+                if ($translation == $text) {
                     $this->apiError = $this->__('Translation resulted in same text');
-                    $this->apiError .= '['.$this->__('from %s to %s', $fromLang, $toLang).']';
+                    $this->apiError .= '[' . $this->__('from %s to %s', $fromLang, $toLang) . ']';
                     return false;
 
-                // Send the translation
+                    // Send the translation
                 } else {
+
+                    // Dispatch an event
+                    Mage::dispatchEvent('content_translate_after', array('text' => &$translation, 'from' => $fromLang, 'to' => $toLang));
+
                     $this->apiTranslation = $translation;
                     return $this->apiTranslation;
                 }
@@ -162,13 +181,13 @@ class Yireo_BingTranslate_Model_Translator extends Mage_Core_Model_Abstract
                 // The translation returned empty
             } else {
                 $this->apiError = $this->__('Empty translation');
-                $this->apiError .= '['.$this->__('from %s to %s', $fromLang, $toLang).']';
+                $this->apiError .= '[' . $this->__('from %s to %s', $fromLang, $toLang) . ']';
                 return false;
             }
         }
 
         $this->apiError = $this->__('Unknown data');
-        $this->apiError .= '['.$this->__('from %s to %s', $fromLang, $toLang).']';
+        $this->apiError .= '[' . $this->__('from %s to %s', $fromLang, $toLang) . ']';
         $this->apiError .= var_export($result, true);
         return false;
     }
@@ -179,8 +198,8 @@ class Yireo_BingTranslate_Model_Translator extends Mage_Core_Model_Abstract
     protected function getAccessToken()
     {
         // Use the token in the cookie if available
-        $cookieToken = Mage::getModel('core/cookie')->getData('bingtranslate_token');
-        if(!empty($cookieToken)) {
+        $cookieToken = Mage::getModel('core/cookie')->get('bingtranslate_token');
+        if (!empty($cookieToken)) {
             return $cookieToken;
         }
 
@@ -188,7 +207,7 @@ class Yireo_BingTranslate_Model_Translator extends Mage_Core_Model_Abstract
         $clientId = Mage::helper('bingtranslate')->getClientId();
         $clientSecret = Mage::helper('bingtranslate')->getClientSecret();
 
-        if(empty($clientId) || empty($clientSecret)) {
+        if (empty($clientId) || empty($clientSecret)) {
             return null;
         }
 
@@ -218,14 +237,15 @@ class Yireo_BingTranslate_Model_Translator extends Mage_Core_Model_Abstract
 
         if (!empty($data->error)) {
             $error = $this->__('Error while requesting OAuth token: %s', $data->error);
-            if (!empty($data->error_description)) $error .= ' ['.$data->error_description.']';
+            if (!empty($data->error_description)) $error .= ' [' . $data->error_description . ']';
             $this->apiError = $error;
             return false;
         }
 
         if (!empty($data->access_token)) {
             if (headers_sent() == false) {
-                Mage::getModel('core/cookie')->setData('bingtranslate_token', $data->access_token);
+                $seconds = 60 * 8; // Set this to less than the 10 minute period Microsoft uses
+                Mage::getModel('core/cookie')->set('bingtranslate_token', $data->access_token, $seconds);
             }
             return $data->access_token;
         }
@@ -241,7 +261,7 @@ class Yireo_BingTranslate_Model_Translator extends Mage_Core_Model_Abstract
      */
     public function hasApiError()
     {
-        if(!empty($this->apiError)) {
+        if (!empty($this->apiError)) {
             return true;
         }
         return false;
@@ -268,20 +288,6 @@ class Yireo_BingTranslate_Model_Translator extends Mage_Core_Model_Abstract
     }
 
     /**
-     * Method to translate a certain text
-     *
-     * @param $string
-     * @param null $variable1
-     * @param null $variable2
-     * @return string
-     */
-    public function __($string, $variable1 = null, $variable2 = null)
-    {
-        if(is_array($string)) $string = explode('; ', $string);
-        return Mage::helper('bingtranslate')->__($string, $variable1, $variable2);
-    }
-
-    /**
      * Method to write some debugging to a log
      *
      * @access public
@@ -292,11 +298,25 @@ class Yireo_BingTranslate_Model_Translator extends Mage_Core_Model_Abstract
      */
     public function debugLog($string, $fromLang, $toLang)
     {
-        if(!is_dir(BP.DS.'var'.DS.'log')) @mkdir(BP.DS.'var'.DS.'log');
-        $tmp_file = BP.DS.'var'.DS.'log'.DS.'bingtranslate.log';
+        if (!is_dir(BP . DS . 'var' . DS . 'log')) @mkdir(BP . DS . 'var' . DS . 'log');
+        $tmp_file = BP . DS . 'var' . DS . 'log' . DS . 'bingtranslate.log';
         $tmp_string = $this->__('Translating from %s to %s', $fromLang, $toLang);
-        file_put_contents($tmp_file, $tmp_string."\n", FILE_APPEND);
-        file_put_contents($tmp_file, $string."\n", FILE_APPEND);
+        file_put_contents($tmp_file, $tmp_string . "\n", FILE_APPEND);
+        file_put_contents($tmp_file, $string . "\n", FILE_APPEND);
+    }
+
+    /**
+     * Method to translate a certain text
+     *
+     * @param $string
+     * @param null $variable1
+     * @param null $variable2
+     * @return string
+     */
+    public function __($string, $variable1 = null, $variable2 = null)
+    {
+        if (is_array($string)) $string = explode('; ', $string);
+        return Mage::helper('bingtranslate')->__($string, $variable1, $variable2);
     }
 
     /**
@@ -308,36 +328,40 @@ class Yireo_BingTranslate_Model_Translator extends Mage_Core_Model_Abstract
      */
     public function bork($text)
     {
-        $textBlocks = preg_split( '/(%[^ ]+)/', $text, -1, PREG_SPLIT_DELIM_CAPTURE );
+        $textBlocks = preg_split('/(%[^ ]+)/', $text, -1, PREG_SPLIT_DELIM_CAPTURE);
         $newTextBlocks = array();
-        foreach ( $textBlocks as $text )
-        {
-            if ( strlen( $text ) && $text[0] == '%' )
-            {
-                $newTextBlocks[] = (string) $text;
+
+        foreach ($textBlocks as $text) {
+            if (strlen($text) && $text[0] == '%') {
+                $newTextBlocks[] = (string)$text;
                 continue;
             }
+
             $orgtext = $text;
             $searchMap = array(
                 '/au/', '/\Bu/', '/\Btion/', '/an/', '/a\B/', '/en\b/',
                 '/\Bew/', '/\Bf/', '/\Bir/', '/\Bi/', '/\bo/', '/ow/', '/ph/',
-                '/th\b/', '/\bU/', '/y\b/', '/v/', '/w/', '/ooo/',
+                '/th\b/', '/\bU/', '/y\b/', '/v/', '/w/', '/oo/', '/oe/'
             );
             $replaceMap = array(
                 'oo', 'oo', 'shun', 'un', 'e', 'ee',
                 'oo', 'ff', 'ur', 'ee', 'oo', 'oo', 'f',
-                't', 'Oo', 'ai', 'f', 'v', 'oo',
+                't', 'Oo', 'ai', 'f', 'v', 'ø', 'œ',
             );
-            $text = preg_replace( $searchMap, $replaceMap, $text );
-            if ( $orgtext == $text && count( $newTextBlocks ) )
-            {
+
+            $text = preg_replace($searchMap, $replaceMap, $text);
+            if ($orgtext == $text && count($newTextBlocks)) {
                 $text .= '-a';
             }
-            $newTextBlocks[] = (string) $text;
+
+            if (empty($text)) $text = $orgText;
+
+            $newTextBlocks[] = (string)$text;
         }
-        $text = implode( '', $newTextBlocks );
-        $text = preg_replace( '/([:.?!])(.*)/', '\\2\\1', $text );
-        $text .= ' Bork bork.';
+
+        $text = implode('', $newTextBlocks);
+        $text = preg_replace('/([:.?!])(.*)/', '\\2\\1', $text);
+        //$text .= '['.$this->getData('toLang').']';
 
         return $text;
     }
