@@ -1,0 +1,226 @@
+<?php
+/**
+ * Yireo BingTranslate for Magento 
+ *
+ * @package     Yireo_BingTranslate
+ * @author      Yireo (http://www.yireo.com/)
+ * @copyright   Copyright (c) 2014 Yireo (http://www.yireo.com/)
+ * @license     Open Software License
+ */
+    
+$itemIds = $this->getItemIds();
+$itemData = $this->getItemData();
+?>
+<div class="content-header">
+<table cellspacing="0">
+	<tr>
+		<td style="width:80%;"><h3 class="icon-head head-tag"><?php echo $this->__('Bing Translate'); ?></h3></td>
+        <td class="formbuttons"></td>
+	</tr>
+</table>
+</div>
+
+<div class="entry-edit" id="confirm-items">
+<div class="entry-edit-head">
+    <h4><?php echo $this->__('Items to be processed'); ?></h4>
+</div>
+<div class="fieldset">
+    <p>
+        <?php echo $this->__('There are %s items to be translated', count($itemIds)); ?>
+        <a href="#" onclick="$j('#batch-items-listing').toggle(); return false;"><?php echo $this->__('Show items'); ?></a>
+    </p>
+    <div class="grid" id="batch-items-listing" style="display:none">
+        <table class="data">
+            <thead>
+                <tr class="headings">
+                    <th><?php echo $this->__('ID'); ?></th>
+                    <th><?php echo $this->__('SKU'); ?></th>
+                    <th><?php echo $this->__('Name'); ?></th>
+                </tr>
+            </thead>
+            <tbody>
+            <?php $i = 0; ?>
+            <?php foreach($this->getItems() as $item) : ?>
+            <tr class="<?php echo ($i % 2 == 0) ? 'even' : 'odd'; ?>">
+                <td><?php echo $item->getId(); ?></td>
+                <td><?php echo $item->getSku(); ?></td>
+                <td><?php echo $item->getName(); ?></td>
+            </tr>
+            <?php $i++; ?>
+            <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
+</div>
+</div>
+
+<div class="entry-edit" id="confirm-attributes">
+<div class="entry-edit-head">
+    <h4><?php echo $this->__('Attributes to be processed'); ?></h4>
+</div>
+<div class="fieldset">
+    <?php $attributes = $this->getAttributes(); ?>
+    <p>
+        <?php echo $this->__('There are %s attributes to be translated', count($attributes)); ?>
+        <a href="#" onclick="$j('#batch-attributes-listing').toggle(); return false;"><?php echo $this->__('Show attributes'); ?></a>
+    </p>
+    <div class="grid" id="batch-attributes-listing" style="display:none">
+        <table class="data">
+            <thead>
+                <tr class="headings">
+                    <th><?php echo $this->__('ID'); ?></th>
+                    <th><?php echo $this->__('Code'); ?></th>
+                    <th><?php echo $this->__('Label'); ?></th>
+                </tr>
+            </thead>
+            <tbody>
+            <?php $i = 0; ?>
+            <?php foreach($attributes as $attribute) : ?>
+            <tr class="<?php echo ($i % 2 == 0) ? 'even' : 'odd'; ?>">
+                <td><?php echo $attribute->getId(); ?></td>
+                <td><?php echo $attribute->getName(); ?></td>
+                <td><?php echo $attribute->getFrontendLabel(); ?></td>
+            </tr>
+            <?php $i++; ?>
+            <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
+</div>
+</div>
+
+<div class="entry-edit" id="confirm-stores">
+<div class="entry-edit-head">
+    <h4><?php echo $this->__('Stores to be processed'); ?></h4>
+</div>
+<div class="fieldset">
+    <?php $stores = $this->getStoreViews(); ?>
+    <p>
+        <?php echo $this->__('There are %s stores to be translated', $stores->count()); ?>
+        <a href="#" onclick="$j('#batch-stores-listing').toggle(); return false;"><?php echo $this->__('Show stores'); ?></a>
+    </p>
+    <div class="grid" id="batch-stores-listing" style="display:none">
+        <table class="data">
+            <thead>
+                <tr class="headings">
+                    <th><?php echo $this->__('Code'); ?></th>
+                    <th><?php echo $this->__('Name'); ?></th>
+                    <th><?php echo $this->__('Locale'); ?></th>
+                </tr>
+            </thead>
+            <tbody>
+            <?php $i = 0; ?>
+            <?php foreach($stores as $store) : ?>
+            <tr class="<?php echo ($i % 2 == 0) ? 'even' : 'odd'; ?>">
+                <td><?php echo $store->getCode(); ?></td>
+                <td><?php echo $store->getName(); ?></td>
+                <td><?php echo $store->getLocale(); ?></td>
+            </tr>
+            <?php $i++; ?>
+            <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
+</div>
+</div>
+
+<div class="entry-edit" id="confirm-batch">
+<div class="entry-edit-head">
+    <h4><?php echo $this->__('Translate Batch'); ?></h4>
+</div>
+<div class="fieldset">
+    <p>
+        <button type="button" class="scalable" onclick="processBatch();" id="confirm-batch-button">
+            <span><span><?php echo $this->__('Start processing %s items', count($itemData)); ?></span></span>
+        </button>
+    </p>
+</div>
+</div>
+
+<div class="entry-edit" id="process-batch" style="display:none;">
+<div class="entry-edit-head">
+    <h4><?php echo $this->__('Translating Batch'); ?></h4>
+</div>
+<div class="fieldset fieldset-progressbar">
+    <div>
+        <div id="progressbar"></div>
+        <div class="progress-label"><?php echo $this->__('Initializing'); ?></div>
+    </div>
+</div>
+</div>
+
+<div class="entry-edit" id="process-log" style="display:none;">
+<div class="entry-edit-head">
+    <h4><?php echo $this->__('Log'); ?></h4>
+</div>
+<div class="fieldset fieldset-progressbar">
+    <div>
+        <div class="progress-log"></div>
+    </div>
+</div>
+</div>
+
+<script>
+var items = <?php echo json_encode($itemData); ?>;
+
+function processBatch()
+{
+    $j('#confirm-items').hide();
+    $j('#confirm-attributes').hide();
+    $j('#confirm-stores').hide();
+    $j('#confirm-batch').hide();
+    $j('#process-batch').show();
+    $j('#process-log').show();
+
+    var progressbar = $j('#progressbar');
+    var progressLabel = $j('.progress-label');
+
+    progressbar.progressbar({
+      value: false,
+      max: <?php echo count($itemData); ?>,
+      change: function() {
+        progressLabel.text(progressbar.progressbar('value') + ' of <?php echo count($itemData); ?> items');
+      },
+      complete: function() {
+        progressLabel.text('<?php echo $this->__('Translation complete'); ?>');
+      }
+    });
+
+    ajaxCall(items, progressbar, 0); 
+}
+
+function ajaxCall(items, progressbar, current) {
+    var value = items[current];
+    $j.ajax({
+        url: '<?php echo Mage::helper('adminhtml')->getUrl('bingtranslate/index/translateProduct'); ?>?data=' + value,
+        complete: function(data){
+
+            response = JSON.parse(data.responseText);
+            progressLog = $j('.progress-log');
+
+            if(response.message) {
+                progressLog.append(response.message + '<br/>');
+            } else {
+                progressLog.append('Error: ' + response.error + '<br/>');
+            }
+
+            var old = progressbar.progressbar('value');
+            progressbar.progressbar('value', old + 1)
+
+            current = current + 1;
+            if (items.length > current) {
+                ajaxCall(items, progressbar, current);
+            }
+        }
+    });
+}
+</script>
+
+<style>
+div.fieldset-progressbar {
+    padding: 50px;
+}
+div.fieldset-progressbar div.progress-label {
+    padding-top: 10px;
+}
+</style>
