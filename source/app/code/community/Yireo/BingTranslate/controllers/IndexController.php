@@ -105,6 +105,7 @@ class Yireo_BingTranslate_IndexController extends Mage_Adminhtml_Controller_Acti
         // Load the attribute-value
         $attribute = $translator->getData('attribute');
         $text = $product->getData($attribute);
+
         if (empty($text)) {
             return $this->sendError($this->__('No product-data found for attribute %s', $attribute));
         }

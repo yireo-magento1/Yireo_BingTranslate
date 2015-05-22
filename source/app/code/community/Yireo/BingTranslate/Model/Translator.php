@@ -13,6 +13,8 @@
  */
 class Yireo_BingTranslate_Model_Translator extends Mage_Core_Model_Abstract
 {
+    const TEXT_MAX_LENGTH = 10000;
+
     /**
      * String containing the API URL
      *
@@ -44,10 +46,24 @@ class Yireo_BingTranslate_Model_Translator extends Mage_Core_Model_Abstract
      */
     public function translate($text = null, $fromLang = null, $toLang = null)
     {
+        // Load text from data-object
+        $text = trim($text);
+        if (empty($text)) {
+            $text = $this->getData('text');
+        }
+
         // Return empty text
         $text = trim($text);
         if (empty($text)) {
-            return '';
+            $this->apiError = $this->__('Empty text in translation request');
+            return false;
+        }
+
+        // Set maximum length
+        if (strlen($text) > self::TEXT_MAX_LENGTH) {
+            $difference = strlen($text) - self::TEXT_MAX_LENGTH;
+            $this->apiError = $this->__('Text exceeds maximum length of %d characters with %d', self::TEXT_MAX_LENGTH, $difference);
+            return false;
         }
 
         // Disable translating
@@ -71,10 +87,21 @@ class Yireo_BingTranslate_Model_Translator extends Mage_Core_Model_Abstract
         }
 
         // Load some variables
-        if (empty($text)) $text = $this->getData('text');
-        if (empty($fromLang)) $fromLang = $this->getData('from');
-        if (empty($toLang)) $toLang = $this->getData('toLang');
-        if ($toLang == 'auto') $toLang = null;
+        if (empty($text)) {
+            $text = $this->getData('text');
+        }
+
+        if (empty($fromLang)) {
+            $fromLang = $this->getData('from');
+        }
+
+        if (empty($toLang)) {
+            $toLang = $this->getData('toLang');
+        }
+
+        if ($toLang == 'auto') {
+            $toLang = null;
+        }
 
         // Skip empty to-language
         if (empty($toLang)) {
@@ -89,14 +116,17 @@ class Yireo_BingTranslate_Model_Translator extends Mage_Core_Model_Abstract
 
         // Bing API fields
         $fields = array(
-            'text' => $text,
             'to' => $toLang,
             'from' => $fromLang,
             'contentType' => 'text/html',
+            'text' => $text,
         );
 
         $url = $this->apiUrl;
         $url .= '?' . http_build_query($fields);
+
+        // Add extra XML-header
+        $headers[] = 'Content-Type: text/xml';
 
         // Add extra Authorization-header
         $accessToken = $this->getAccessToken();
@@ -114,8 +144,13 @@ class Yireo_BingTranslate_Model_Translator extends Mage_Core_Model_Abstract
         curl_setopt($ch, CURLOPT_USERAGENT, 'Magento/PHP');
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        if (!empty($headers)) curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+
+        if (!empty($headers)) {
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        }
+
         $result = curl_exec($ch);
+        $result = trim($result);
 
         // Detect an empty CURL response
         if (empty($result)) {
@@ -131,7 +166,15 @@ class Yireo_BingTranslate_Model_Translator extends Mage_Core_Model_Abstract
             return false;
         }
 
-        // Detect HTML feedback
+        // Detect direct HTML output
+        if (preg_match('/^\<string xmlns="(.*)"\>/', $result, $match)) {
+            $result = preg_replace('/^\<string xmlns="(.*)"\>/', '', $result);
+            $result = preg_replace('/\<\/string\>$/', '', $result);
+            $translation = html_entity_decode($result);
+            return $this->setTranslationOutput($translation, $fromLang, $toLang);
+        }
+
+        // Detect other HTML output using dead-simple tricks
         if (preg_match('/\<\/html\>$/', $result) || preg_match('/\ style=\"/', $result)) {
 
             // Try to extract the message from this HTML
@@ -151,7 +194,7 @@ class Yireo_BingTranslate_Model_Translator extends Mage_Core_Model_Abstract
         } catch (Exception $e) {
 
             $this->debugLog($e->getMessage(), $fromLang, $toLang);
-            $this->apiError = $this->__('Response is HTML, not XML [saved in %s]', 'var/log/bingtranslate.log');
+            $this->apiError = $this->__('Unable to parse response as XML [saved in %s]', 'var/log/bingtranslate.log');
             return false;
         }
 
@@ -170,12 +213,7 @@ class Yireo_BingTranslate_Model_Translator extends Mage_Core_Model_Abstract
 
                     // Send the translation
                 } else {
-
-                    // Dispatch an event
-                    Mage::dispatchEvent('content_translate_after', array('text' => &$translation, 'from' => $fromLang, 'to' => $toLang));
-
-                    $this->apiTranslation = $translation;
-                    return $this->apiTranslation;
+                    $this->setTranslationOutput($translation, $fromLang, $toLang);
                 }
 
                 // The translation returned empty
@@ -190,6 +228,15 @@ class Yireo_BingTranslate_Model_Translator extends Mage_Core_Model_Abstract
         $this->apiError .= '[' . $this->__('from %s to %s', $fromLang, $toLang) . ']';
         $this->apiError .= var_export($result, true);
         return false;
+    }
+
+    public function setTranslationOutput($string, $fromLang, $toLang)
+    {
+        // Dispatch an event
+        Mage::dispatchEvent('content_translate_after', array('text' => &$string, 'from' => $fromLang, 'to' => $toLang));
+
+        $this->apiTranslation = $string;
+        return $this->apiTranslation;
     }
 
     /**

@@ -160,6 +160,7 @@ class Yireo_BingTranslate_Model_Observer extends Yireo_BingTranslate_Model_Obser
         }
 
         $observer->getEvent()->setData('text', $text);
+
         return $this;
     }
 
