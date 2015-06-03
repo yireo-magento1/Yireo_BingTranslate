@@ -13,7 +13,7 @@
 
     <modules>
         <Yireo_BingTranslate>
-            <version>3.0.3</version>
+            <version>3.0.4</version>
         </Yireo_BingTranslate>
     </modules>
 
@@ -141,6 +141,7 @@
                 <logging>0</logging>
                 <widget_fixed>1</widget_fixed>
                 <jquery>1</jquery>
+                <batch_max_items>1000</batch_max_items>
             </bingtranslate>
         </catalog>
     </default>

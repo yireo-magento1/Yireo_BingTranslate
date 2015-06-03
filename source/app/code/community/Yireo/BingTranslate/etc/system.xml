@@ -159,6 +159,16 @@
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                         </batch_stores>
+
+                        <batch_max_items translate="label">
+                            <label>Maximum display in batch-mode</label>
+                            <comment><![CDATA[Treshold above which item-details will be hidden to save PHP memory]]></comment>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>20</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </batch_max_items>
                     </fields>
                 </bingtranslate>
             </groups>
