@@ -325,7 +325,6 @@ class Yireo_BingTranslate_Model_Translator extends Mage_Core_Model_Abstract
     /**
      * Method to return the API error, if any
      *
-     * @return null
      */
     public function getApiError()
     {
@@ -345,7 +344,6 @@ class Yireo_BingTranslate_Model_Translator extends Mage_Core_Model_Abstract
     /**
      * Method to write some debugging to a log
      *
-     * @access public
      * @param $string
      * @param $fromLang
      * @param $toLang
@@ -364,8 +362,8 @@ class Yireo_BingTranslate_Model_Translator extends Mage_Core_Model_Abstract
      * Method to translate a certain text
      *
      * @param $string
-     * @param null $variable1
-     * @param null $variable2
+     *  $variable1
+     *  $variable2
      * @return string
      */
     public function __($string, $variable1 = null, $variable2 = null)
@@ -377,7 +375,6 @@ class Yireo_BingTranslate_Model_Translator extends Mage_Core_Model_Abstract
     /**
      * Method to borkify a given text
      *
-     * @access public
      * @param $text
      * @return mixed|string
      */

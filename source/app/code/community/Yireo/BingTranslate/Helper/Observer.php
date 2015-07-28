@@ -16,7 +16,6 @@ class Yireo_BingTranslate_Helper_Observer extends Mage_Core_Helper_Abstract
     /**
      * Helper method to fetch the button-HTML
      *
-     * @access public
      * @param int $id
      * @param string $label
      * @param bool $disabled
@@ -49,7 +48,6 @@ class Yireo_BingTranslate_Helper_Observer extends Mage_Core_Helper_Abstract
     /**
      * Helper method to fetch the button-HTML
      *
-     * @access public
      * @param string $attribute_code
      * @param string $html_id
      * @return string

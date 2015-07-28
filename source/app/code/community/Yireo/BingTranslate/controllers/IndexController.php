@@ -269,8 +269,6 @@ class Yireo_BingTranslate_IndexController extends Mage_Adminhtml_Controller_Acti
     /**
      * Perform some sanity checks
      *
-     * @access protected
-     * @param null
      * @return string
      */
     protected function preload()
@@ -329,8 +327,6 @@ class Yireo_BingTranslate_IndexController extends Mage_Adminhtml_Controller_Acti
     /**
      * Method to return the translator object
      *
-     * @access public
-     * @param null
      * @return Yireo_BingTranslate_Model_Translator
      */
     public function getTranslator()
@@ -341,8 +337,6 @@ class Yireo_BingTranslate_IndexController extends Mage_Adminhtml_Controller_Acti
     /**
      * Method to call upon the API
      *
-     * @access protected
-     * @param null
      * @return string
      */
     protected function translate()
@@ -360,9 +354,8 @@ class Yireo_BingTranslate_IndexController extends Mage_Adminhtml_Controller_Acti
     /**
      * Helper method to send a success
      *
-     * @access protected
      * @param string $message
-     * @return null
+     *
      */
     protected function sendMessage($message = null)
     {
@@ -374,7 +367,6 @@ class Yireo_BingTranslate_IndexController extends Mage_Adminhtml_Controller_Acti
     /**
      * Helper method to send a specific error
      *
-     * @access protected
      * @param string $message
      * @return mixed
      */
@@ -388,7 +380,6 @@ class Yireo_BingTranslate_IndexController extends Mage_Adminhtml_Controller_Acti
     /**
      * Helper method to send the translation
      *
-     * @access protected
      * @param string $translation
      * @return mixed
      */

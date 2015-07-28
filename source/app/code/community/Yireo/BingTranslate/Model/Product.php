@@ -35,7 +35,7 @@ class Yireo_BingTranslate_Model_Product extends Mage_Core_Model_Abstract
      * @param $stores
      * @param int $delay
      * @param bool $allowTranslation
-     * @return null
+     *
      */
     public function translate($product, $productAttributes, $stores, $delay = 0, $allowTranslation = null)
     {

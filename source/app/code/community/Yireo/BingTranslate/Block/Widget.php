@@ -13,11 +13,9 @@
  */
 class Yireo_BingTranslate_Block_Widget extends Mage_Core_Block_Template
 {
-    /*
+    /**
      * Return the inline layout
-     * 
-     * @access public
-     * @param null
+     *
      * @return string (SIMPLE|HORIZONTAL|null
      */
     public function getInlineLayout()
@@ -25,11 +23,9 @@ class Yireo_BingTranslate_Block_Widget extends Mage_Core_Block_Template
         return null; // @todo
     }
 
-    /*
+    /**
      * Return the current page language
-     * 
-     * @access public
-     * @param null
+     *
      * @return string (en)
      */
     public function getPageLanguage()
@@ -37,11 +33,9 @@ class Yireo_BingTranslate_Block_Widget extends Mage_Core_Block_Template
         return null; // @todo
     }
 
-    /*
+    /**
      * Return the included languages
-     * 
-     * @access public
-     * @param null
+     *
      * @return array
      */
     public function getIncludedLanguages()
@@ -49,11 +43,9 @@ class Yireo_BingTranslate_Block_Widget extends Mage_Core_Block_Template
         return array(); // @todo
     }
 
-    /*
+    /**
      * Return whether this is a multiple language page
-     * 
-     * @access public
-     * @param null
+     *
      * @return bool
      */
     public function isMultilanguagePage()
@@ -61,11 +53,9 @@ class Yireo_BingTranslate_Block_Widget extends Mage_Core_Block_Template
         return false; // @todo
     }
 
-    /*
+    /**
      * Return the GA ID
-     * 
-     * @access public
-     * @param null
+     *
      * @return string
      */
     public function getGaId()
@@ -73,11 +63,9 @@ class Yireo_BingTranslate_Block_Widget extends Mage_Core_Block_Template
         return null; // @todo: Fetch from Mage_BingAnalytics module
     }
 
-    /*
+    /**
      * Remove the 
-     * 
-     * @access public
-     * @param null
+     *
      * @return bool
      */
     public function removeAttribution()

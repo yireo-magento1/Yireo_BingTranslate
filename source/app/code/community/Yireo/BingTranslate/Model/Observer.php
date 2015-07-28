@@ -174,7 +174,7 @@ class Yireo_BingTranslate_Model_Observer extends Yireo_BingTranslate_Model_Obser
      * @param $fromLang
      * @param $toLang
      *
-     * @return null|string
+     * |string
      */
     protected function getManualTranslationsFile($fromLang, $toLang)
     {

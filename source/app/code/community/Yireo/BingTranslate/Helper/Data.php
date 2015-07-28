@@ -16,8 +16,6 @@ class Yireo_BingTranslate_Helper_Data extends Mage_Core_Helper_Abstract
     /**
      * Switch to determine whether this extension is enabled or not
      *
-     * @access public
-     * @param null
      * @return bool
      */
     public function enabled()
@@ -51,14 +49,12 @@ class Yireo_BingTranslate_Helper_Data extends Mage_Core_Helper_Abstract
     /**
      * Check whether the API-details are configured
      *
-     * @access public
-     * @param null
      * @return bool
      */
     public function hasApiSettings()
     {
-        $clientId = Mage::helper('bingtranslate')->getClientId();
-        $clientSecret = Mage::helper('bingtranslate')->getClientSecret();
+        $clientId = $this->getClientId();
+        $clientSecret = $this->getClientSecret();
         if (empty($clientId) || empty($clientSecret)) {
             return false;
         }
@@ -68,8 +64,6 @@ class Yireo_BingTranslate_Helper_Data extends Mage_Core_Helper_Abstract
     /**
      * Return the configured client-ID
      *
-     * @access public
-     * @param null
      * @return string
      */
     public function getClientId()
@@ -90,8 +84,6 @@ class Yireo_BingTranslate_Helper_Data extends Mage_Core_Helper_Abstract
     /**
      * Return the text for the button label
      *
-     * @access public
-     * @param null
      * @return string
      */
     public function getButtonLabel()
@@ -105,8 +97,6 @@ class Yireo_BingTranslate_Helper_Data extends Mage_Core_Helper_Abstract
     /**
      * Return the source language
      *
-     * @access public
-     * @param null
      * @return string
      */
     public function getFromLanguage()
@@ -119,8 +109,6 @@ class Yireo_BingTranslate_Helper_Data extends Mage_Core_Helper_Abstract
     /**
      * Return the title of the source language
      *
-     * @access public
-     * @param null
      * @return string
      */
     public function getFromTitle()
@@ -133,8 +121,6 @@ class Yireo_BingTranslate_Helper_Data extends Mage_Core_Helper_Abstract
     /**
      * Return the destination language
      *
-     * @access public
-     * @param null
      * @return string
      */
     public function getToLanguage($store = null)
@@ -166,8 +152,6 @@ class Yireo_BingTranslate_Helper_Data extends Mage_Core_Helper_Abstract
     /**
      * Return the title of the destination language
      *
-     * @access public
-     * @param null
      * @return string
      */
     public function getToTitle()
@@ -237,8 +221,6 @@ class Yireo_BingTranslate_Helper_Data extends Mage_Core_Helper_Abstract
     /**
      * Return the title of the destination language
      *
-     * @access public
-     * @param null
      * @return string
      */
     public function getStoreByCode($code)
@@ -255,8 +237,6 @@ class Yireo_BingTranslate_Helper_Data extends Mage_Core_Helper_Abstract
     /**
      * Check whether the language-code is supported
      *
-     * @access public
-     * @param null
      * @return array
      */
     public function isSupportedLanguage($code)
@@ -279,8 +259,6 @@ class Yireo_BingTranslate_Helper_Data extends Mage_Core_Helper_Abstract
     /**
      * Get supported languages
      *
-     * @access public
-     * @param null
      * @return array
      */
     public function getSupportedLanguages()

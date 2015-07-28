@@ -16,7 +16,6 @@ class Yireo_BingTranslate_Model_Observer_Abstract
     /**
      * Method to check whether a certain event is allowed
      *
-     * @access protected
      * @param $observer
      * @return bool
      */
@@ -81,8 +80,6 @@ class Yireo_BingTranslate_Model_Observer_Abstract
     /**
      * Method to return the data types for specific URLs
      *
-     * @access protected
-     * @param null
      * @return string
      */
     protected function getDataType()

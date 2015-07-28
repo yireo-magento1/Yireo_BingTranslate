@@ -16,8 +16,6 @@ class Yireo_BingTranslate_Block_Script extends Mage_Core_Block_Template
     /**
      * Return the customization ID
      *
-     * @access public
-     * @param null
      * @return string
      */
     public function getCustomizationId()
@@ -28,8 +26,6 @@ class Yireo_BingTranslate_Block_Script extends Mage_Core_Block_Template
     /**
      * Allow translation
      *
-     * @access public
-     * @param null
      * @return bool
      */
     public function allowTranslation()

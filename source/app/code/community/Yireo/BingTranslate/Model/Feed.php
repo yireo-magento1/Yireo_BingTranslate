@@ -22,8 +22,6 @@ class Yireo_BingTranslate_Model_Feed extends Mage_AdminNotification_Model_Feed
     /**
      * Return the feed URL
      *
-     * @access public
-     * @param null
      * @return string
      */
     public function getFeedUrl()
@@ -34,8 +32,6 @@ class Yireo_BingTranslate_Model_Feed extends Mage_AdminNotification_Model_Feed
     /**
      * Try to update feed
      *
-     * @access public
-     * @param null
      * @return bool
      */
     public function updateIfAllowed()
@@ -63,8 +59,6 @@ class Yireo_BingTranslate_Model_Feed extends Mage_AdminNotification_Model_Feed
     /**
      * Override the original method
      *
-     * @access public
-     * @param null
      * @return SimpleXMLElement
      */
     public function getFeedData()
