@@ -14,22 +14,30 @@
 class Yireo_BingTranslate_Block_Adminhtml_Batch extends Mage_Core_Block_Template
 {
     /**
-     * @var
+     * Listing of items
+     *
+     * @var array
      */
     protected $_items;
 
     /**
-     * @var
+     * Listing of numerical IDs for items
+     *
+     * @var array
      */
     protected $_itemIds;
 
     /**
-     * @var
+     * Listing of Store Views
+     *
+     * @var array
      */
     protected $_storeViews;
 
     /**
-     * @var
+     * Listing of attributes
+     *
+     * @var array
      */
     protected $_attributes;
 
@@ -43,6 +51,12 @@ class Yireo_BingTranslate_Block_Adminhtml_Batch extends Mage_Core_Block_Template
         $this->setTemplate('bingtranslate/batch.phtml');
     }
 
+    /**
+     * Return the batch type currently set in the URL
+     *
+     * @return mixed
+     * @throws Exception
+     */
     public function getBatchType()
     {
         return $this->getRequest()->getParam('type');
@@ -81,6 +95,8 @@ class Yireo_BingTranslate_Block_Adminhtml_Batch extends Mage_Core_Block_Template
     }
 
     /**
+     * Return a listing of the selected items
+     *
      * @return Mage_Catalog_Model_Resource_Product_Collection
      */
     public function getItems()
@@ -104,6 +120,8 @@ class Yireo_BingTranslate_Block_Adminhtml_Batch extends Mage_Core_Block_Template
     }
 
     /**
+     * Return a listing of the selected Store Views
+     *
      * @return Mage_Core_Model_Resource_Store_Collection
      */
     public function getStoreViews()
@@ -130,6 +148,8 @@ class Yireo_BingTranslate_Block_Adminhtml_Batch extends Mage_Core_Block_Template
     }
 
     /**
+     * Return a listing of the selected attributes
+     *
      * @return mixed
      */
     public function getAttributes()
@@ -150,6 +170,8 @@ class Yireo_BingTranslate_Block_Adminhtml_Batch extends Mage_Core_Block_Template
     }
 
     /**
+     * Return a merged array on all the selected entities (items, store views and attributes)
+     *
      * @return array
      */
     public function getItemData()

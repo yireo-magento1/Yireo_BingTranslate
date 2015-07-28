@@ -16,8 +16,8 @@ class Yireo_BingTranslate_Model_Observer extends Yireo_BingTranslate_Model_Obser
     /**
      * Listen to the event core_block_abstract_to_html_before
      *
-     * @access public
      * @parameter Varien_Event_Observer $observer
+     *
      * @return $this
      */
     public function coreBlockAbstractToHtmlBefore($observer)
@@ -28,7 +28,6 @@ class Yireo_BingTranslate_Model_Observer extends Yireo_BingTranslate_Model_Obser
         }
 
         // Get the variables
-        $transport = $observer->getEvent()->getTransport();
         $block = $observer->getEvent()->getBlock();
         $element = $block->getElement();
 
@@ -37,21 +36,26 @@ class Yireo_BingTranslate_Model_Observer extends Yireo_BingTranslate_Model_Obser
 
         // Fetch the languages from the configuration
         $from_language = Mage::helper('bingtranslate')->getFromLanguage();
-        $from_title = Mage::helper('bingtranslate')->getFromTitle();
         $to_language = Mage::helper('bingtranslate')->getToLanguage();
-        $to_title = Mage::helper('bingtranslate')->getToTitle();
 
         // Construct the button-label
         $button_label = Mage::helper('bingtranslate')->getButtonLabel();
 
         // Determine whether this field is disabled or not
         $disabled = false;
-        if ($from_language == $to_language) $disabled = true;
+        if ($from_language == $to_language) {
+            $disabled = true;
+        }
 
         // Fetch the data ID (either category ID or product ID) from the URL
         $data_id = Mage::app()->getRequest()->getParam('id');
-        if (empty($data_id)) $data_id = Mage::app()->getRequest()->getParam('page_id');
-        if (empty($data_id)) $data_id = Mage::app()->getRequest()->getParam('block_id');
+        if (empty($data_id)) {
+            $data_id = Mage::app()->getRequest()->getParam('page_id');
+        }
+
+        if (empty($data_id)) {
+            $data_id = Mage::app()->getRequest()->getParam('block_id');
+        }
 
         // If this data-type is unknown, do not display anything
         if ($data_type == 'unknown') {
@@ -99,8 +103,8 @@ class Yireo_BingTranslate_Model_Observer extends Yireo_BingTranslate_Model_Obser
     /**
      * Method fired on the event <controller_action_predispatch>
      *
-     * @access public
      * @param Varien_Event_Observer $observer
+     *
      * @return Yireo_BingTranslate_Model_Observer
      */
     public function controllerActionPredispatch($observer)
@@ -112,8 +116,8 @@ class Yireo_BingTranslate_Model_Observer extends Yireo_BingTranslate_Model_Obser
     /**
      * Method fired on the event <content_translate_after>
      *
-     * @access public
      * @param Varien_Event_Observer $observer
+     *
      * @return Yireo_BingTranslate_Model_Observer
      */
     public function contentTranslateAfter($observer)
@@ -122,6 +126,58 @@ class Yireo_BingTranslate_Model_Observer extends Yireo_BingTranslate_Model_Obser
         $fromLang = $observer->getEvent()->getFrom();
         $toLang = $observer->getEvent()->getTo();
 
+        $translations = $this->getManualTranslations($fromLang, $toLang);
+
+        if (!empty($translations)) {
+            foreach ($translations as $translationFrom => $translationTo) {
+                $text = str_replace($translationFrom, $translationTo, $text);
+            }
+
+            $observer->getEvent()->setData('text', $text);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Get the manual translations from a translation file
+     *
+     * @param string $fromLang
+     * @param string $toLang
+     *
+     * @return $this|array
+     */
+    protected function getManualTranslations($fromLang, $toLang)
+    {
+        $translations = array();
+        $translationFile = $this->getManualTranslationsFile($fromLang, $toLang);
+
+        if (empty($translationFile)) {
+            return $translations;
+        }
+
+        if (($handle = fopen($translationFile, 'r')) !== FALSE) {
+            while (($data = fgetcsv($handle, 1000, ',')) !== FALSE) {
+                if (empty($data[0])) continue;
+                if (empty($data[1])) continue;
+                $translations[$data[0]] = $data[1];
+            }
+        }
+        fclose($handle);
+
+        return $translations;
+    }
+
+    /**
+     * Determine the translation file
+     *
+     * @param $fromLang
+     * @param $toLang
+     *
+     * @return null|string
+     */
+    protected function getManualTranslationsFile($fromLang, $toLang)
+    {
         $translationFolder = Mage::getSingleton('core/design_package')->getBaseDir(
             array('_area' => 'adminhtml', '_type' => 'translations')
         );
@@ -133,37 +189,26 @@ class Yireo_BingTranslate_Model_Observer extends Yireo_BingTranslate_Model_Obser
             $toLang . '.csv',
         );
 
+        $translationFile = null;
         foreach ($translationFiles as $translationFile) {
             if (file_exists($translationFolder . '/' . $translationFile)) {
                 $translationFile = $translationFolder . '/' . $translationFile;
+                break;
             } else {
                 $translationFile = null;
             }
         }
 
-        if (empty($translationFile)) {
-            return $this;
-        }
-
-        $translations = array();
-        if (($handle = fopen($translationFile, 'r')) !== FALSE) {
-            while (($data = fgetcsv($handle, 1000, ',')) !== FALSE) {
-                if (empty($data[0])) continue;
-                if (empty($data[1])) continue;
-                $translations[$data[0]] = $data[1];
-            }
-        }
-        fclose($handle);
-
-        foreach ($translations as $translationFrom => $translationTo) {
-            $text = str_replace($translationFrom, $translationTo, $text);
-        }
-
-        $observer->getEvent()->setData('text', $text);
-
-        return $this;
+        return $translationFile;
     }
 
+    /**
+     * Method fired on the event <core_block_abstract_prepare_layout_before>
+     *
+     * @param Varien_Event_Observer $observer
+     *
+     * @return Yireo_BingTranslate_Model_Observer
+     */
     public function coreBlockAbstractPrepareLayoutBefore($observer)
     {
         $block = $observer->getEvent()->getBlock();

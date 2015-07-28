@@ -13,6 +13,9 @@
  */
 class Yireo_BingTranslate_Model_Translator extends Mage_Core_Model_Abstract
 {
+    /**
+     * Maximum length to translate
+     */
     const TEXT_MAX_LENGTH = 10000;
 
     /**
@@ -42,7 +45,7 @@ class Yireo_BingTranslate_Model_Translator extends Mage_Core_Model_Abstract
      * @param string $text
      * @param string $fromLang
      * @param string $toLang
-     * @return text
+     * @return string
      */
     public function translate($text = null, $fromLang = null, $toLang = null)
     {
@@ -107,6 +110,11 @@ class Yireo_BingTranslate_Model_Translator extends Mage_Core_Model_Abstract
         if (empty($toLang)) {
             $this->apiError = $this->__('Empty or unsupported destination-language');
             return false;
+        }
+
+        // If the languages are the same, return the original
+        if ($fromLang == $toLang) {
+            return $text;
         }
 
         // Dispatch an event

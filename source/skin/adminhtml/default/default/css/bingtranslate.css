@@ -17,3 +17,20 @@ div.bingtranslate-widget div {
     float: left;
     padding: 10px;
 }
+
+div.bingtranslate-container {
+    position: relative;
+}
+
+div.bingtranslate-container a {
+    text-decoration: none;
+    position: absolute;
+    top: 2px;
+    right: 10px;
+    width: 15px;
+}
+
+div.bingtranslate-icon {
+    background: transparent url("../images/bingtranslate/icon-language.png") no-repeat top left;
+}
+

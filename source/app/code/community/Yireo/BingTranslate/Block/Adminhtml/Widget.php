@@ -26,8 +26,6 @@ class Yireo_BingTranslate_Block_Adminhtml_Widget extends Mage_Core_Block_Templat
     /**
      * Return the current source-language
      *
-     * @access public
-     * @param null
      * @return string
      */
     public function getSourceLanguage()
@@ -38,7 +36,6 @@ class Yireo_BingTranslate_Block_Adminhtml_Widget extends Mage_Core_Block_Templat
     /**
      * Return the current destination-language
      *
-     * @access public
      * @param bool $stripped
      * @return string
      */
@@ -55,8 +52,6 @@ class Yireo_BingTranslate_Block_Adminhtml_Widget extends Mage_Core_Block_Templat
     /**
      * Return a list of languages
      *
-     * @access public
-     * @param null
      * @return array
      */
     public function getLanguages()
@@ -91,6 +86,8 @@ class Yireo_BingTranslate_Block_Adminhtml_Widget extends Mage_Core_Block_Templat
     }
 
     /**
+     * Get a listing of store languages
+     *
      * @return array
      */
     public function getStoreLanguages()

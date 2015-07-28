@@ -40,7 +40,7 @@ class Yireo_BingTranslate_Helper_Observer extends Mage_Core_Helper_Abstract
                 'class' => ($disabled) ? 'bingtranslate_button disabled' : 'bingtranslate_button',
                 'style' => 'margin-right:5px;margin-top:5px;',
                 'id' => 'bingtranslate_button_' . $id,
-                'onclick' => 'bingtranslate(' . implode(',', $jsArgs) . ')'
+                'onclick' => 'YireoBingTranslate.translateAttribute(' . implode(',', $jsArgs) . ')'
             ))->toHtml();
 
         return $html;

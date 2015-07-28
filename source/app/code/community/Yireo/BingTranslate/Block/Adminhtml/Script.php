@@ -26,7 +26,6 @@ class Yireo_BingTranslate_Block_Adminhtml_Script extends Mage_Core_Block_Templat
     /**
      * Return a specific URL
      *
-     * @access public
      * @param string $route
      * @param array $params
      * @return string
@@ -37,14 +36,22 @@ class Yireo_BingTranslate_Block_Adminhtml_Script extends Mage_Core_Block_Templat
     }
 
     /**
-     * Return the configured API key
+     * Get the AJAX base URL for translating entities
      *
-     * @access public
-     * @param null
      * @return string
      */
-    public function getAjaxUrl()
+    public function getAjaxEntityBaseUrl()
     {
         return $this->getUrl('bingtranslate/index/' . $this->getPageType());
+    }
+
+    /**
+     * Get the AJAX base URL for translating strings
+     *
+     * @return string
+     */
+    public function getAjaxTextBaseUrl()
+    {
+        return $this->getUrl('bingtranslate/index/text');
     }
 }
