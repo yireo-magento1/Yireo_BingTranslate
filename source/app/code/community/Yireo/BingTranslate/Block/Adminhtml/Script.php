@@ -42,7 +42,7 @@ class Yireo_BingTranslate_Block_Adminhtml_Script extends Mage_Core_Block_Templat
      */
     public function getAjaxEntityBaseUrl()
     {
-        return $this->getUrl('bingtranslate/index/' . $this->getPageType());
+        return $this->getUrl('adminhtml/bingtranslate/' . $this->getPageType());
     }
 
     /**
@@ -52,6 +52,6 @@ class Yireo_BingTranslate_Block_Adminhtml_Script extends Mage_Core_Block_Templat
      */
     public function getAjaxTextBaseUrl()
     {
-        return $this->getUrl('bingtranslate/index/text');
+        return $this->getUrl('adminhtml/bingtranslate/text');
     }
 }

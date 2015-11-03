@@ -20,7 +20,14 @@ class Yireo_BingTranslate_Helper_Data extends Mage_Core_Helper_Abstract
      */
     public function enabled()
     {
-        if ($this->hasApiSettings() == false) return false;
+        if ((bool)Mage::getStoreConfig('advanced/modules_disable_output/Yireo_BingTranslate')) {
+            return false;
+        }
+
+        if ($this->hasApiSettings() == false) {
+            return false;
+        }
+
         return true;
     }
 
@@ -45,7 +52,7 @@ class Yireo_BingTranslate_Helper_Data extends Mage_Core_Helper_Abstract
 
         Mage::log($message, null, 'bingtranslate.log');
     }
-    
+
     /**
      * Check whether the API-details are configured
      *

@@ -13,7 +13,7 @@
 
     <modules>
         <Yireo_BingTranslate>
-            <version>3.1.0</version>
+            <version>3.1.3</version>
         </Yireo_BingTranslate>
     </modules>
 
@@ -117,13 +117,13 @@
 
     <admin>
         <routers>
-            <bingtranslate>
-                <use>admin</use>
+            <adminhtml>
                 <args>
-                    <module>Yireo_BingTranslate</module>
-                    <frontName>bingtranslate</frontName>
+                    <modules>
+                        <bingtranslate after="Mage_Adminhtml">Yireo_BingTranslate</bingtranslate>
+                    </modules>
                 </args>
-            </bingtranslate>
+            </adminhtml>
         </routers>
     </admin>
 

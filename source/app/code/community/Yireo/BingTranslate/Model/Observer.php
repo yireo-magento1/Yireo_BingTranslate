@@ -174,7 +174,7 @@ class Yireo_BingTranslate_Model_Observer extends Yireo_BingTranslate_Model_Obser
      * @param $fromLang
      * @param $toLang
      *
-     * |string
+     * @return string
      */
     protected function getManualTranslationsFile($fromLang, $toLang)
     {
@@ -217,7 +217,7 @@ class Yireo_BingTranslate_Model_Observer extends Yireo_BingTranslate_Model_Obser
         if ($block instanceof $blockClass && $block->getRequest()->getControllerName() == 'catalog_product') {
             $block->addItem('bingtranslate', array(
                 'label' => 'Translate via BingTranslate',
-                'url' => Mage::helper('adminhtml')->getUrl('bingtranslate/index/batch', array('type' => 'product')),
+                'url' => Mage::helper('adminhtml')->getUrl('adminhtml/bingtranslate/batch', array('type' => 'product')),
             ));
         }
     }

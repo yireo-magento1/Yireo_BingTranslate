@@ -39,6 +39,8 @@ class Yireo_BingTranslate_Model_Translator extends Mage_Core_Model_Abstract
      */
     protected $apiTranslation = null;
 
+    protected $reverseStrings = array();
+
     /**
      * Method to call upon the Bing API
      *
@@ -115,6 +117,13 @@ class Yireo_BingTranslate_Model_Translator extends Mage_Core_Model_Abstract
         // If the languages are the same, return the original
         if ($fromLang == $toLang) {
             return $text;
+        }
+
+        // Check for reversable strings
+        if (preg_match_all('/{{([^}]+)}}/', $text, $matches)) {
+            foreach($matches[0] as $match) {
+                $this->reverseStrings[] = $match;
+            }
         }
 
         // Dispatch an event
@@ -238,12 +247,22 @@ class Yireo_BingTranslate_Model_Translator extends Mage_Core_Model_Abstract
         return false;
     }
 
-    public function setTranslationOutput($string, $fromLang, $toLang)
+    public function setTranslationOutput($text, $fromLang, $toLang)
     {
-        // Dispatch an event
-        Mage::dispatchEvent('content_translate_after', array('text' => &$string, 'from' => $fromLang, 'to' => $toLang));
+        if (preg_match_all('/{{([^}]+)}}/', $text, $matches)) {
+            $i = 0;
+            foreach($matches[0] as $match) {
+                if (isset($this->reverseStrings[$i])) {
+                    $text = str_replace($match, $this->reverseStrings[$i], $text);
+                }
+                $i++;
+            }
+        }
 
-        $this->apiTranslation = $string;
+        // Dispatch an event
+        Mage::dispatchEvent('content_translate_after', array('text' => &$text, 'from' => $fromLang, 'to' => $toLang));
+
+        $this->apiTranslation = $text;
         return $this->apiTranslation;
     }
 

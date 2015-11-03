@@ -31,7 +31,7 @@ $itemData = $this->getItemData();
         <a href="#" onclick="$j('#batch-items-listing').toggle(); return false;"><?= $this->__('Show items'); ?></a> |
         <?php endif; ?>
         <?php if (count($this->getItemIds()) > 0) : ?>
-        <a href="<?= Mage::helper('adminhtml')->getUrl('bingtranslate/index/batch', array('type' => $this->getBatchType())); ?>"><?= $this->__('Select all items'); ?></a>
+        <a href="<?= Mage::helper('adminhtml')->getUrl('adminhtml/bingtranslate/batch', array('type' => $this->getBatchType())); ?>"><?= $this->__('Select all items'); ?></a>
         <?php endif; ?>
     </p>
     <?php if($this->getItemCount() < Mage::getStoreConfig('catalog/bingtranslate/batch_max_items')) : ?>
@@ -199,7 +199,7 @@ function processBatch()
 function ajaxCall(items, progressbar, current) {
     var value = items[current];
     $j.ajax({
-        url: '<?= Mage::helper('adminhtml')->getUrl('bingtranslate/index/translateProduct'); ?>?data=' + value,
+        url: '<?= Mage::helper('adminhtml')->getUrl('adminhtml/bingtranslate/translateProduct'); ?>?data=' + value,
         complete: function(data){
 
             response = JSON.parse(data.responseText);
