@@ -14,7 +14,7 @@
  * @category   BingTranslate
  * @package     Yireo_BingTranslate
  */
-class Yireo_BingTranslate_IndexController extends Mage_Adminhtml_Controller_Action
+class Yireo_BingTranslate_BingtranslateController extends Mage_Adminhtml_Controller_Action
 {
     /**
      * @var string
