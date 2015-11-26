@@ -75,7 +75,7 @@
                         <bork translate="label">
                             <label>Bork Debugging</label>
                             <frontend_type>select</frontend_type>
-                            <comment><![CDATA[Use bork-words for debugging]]></comment>
+                            <comment><![CDATA[Use the Swedish chef for bork debugging]]></comment>
                             <source_model>adminhtml/system_config_source_yesno</source_model>
                             <sort_order>20</sort_order>
                             <show_in_default>1</show_in_default>
