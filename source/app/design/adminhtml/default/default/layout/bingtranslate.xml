@@ -42,7 +42,7 @@
         </reference>
     </bingtranslate_load>
 
-    <bingtranslate_index_batch>
+    <adminhtml_bingtranslate_batch>
         <reference name="head">
             <action method="addItem"><type>skin_css</type><name>css/bingtranslate/jquery-ui.min.css</name></action>
             <action method="addItem"><type>skin_css</type><name>css/bingtranslate/jquery-ui.theme.css</name></action>
@@ -52,5 +52,5 @@
             <action method="addItem"><type>skin_js</type><name>js/bingtranslate/jquery-ui.min.js</name></action>
             <action method="addItem"><type>skin_js</type><name>js/bingtranslate/bingtranslate.js</name></action>
         </reference>
-    </bingtranslate_index_batch>
+    </adminhtml_bingtranslate_batch>
 </layout>

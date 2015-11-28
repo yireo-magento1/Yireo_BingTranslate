@@ -11,18 +11,8 @@
 /**
  * BingTranslate Widget-block
  */
-class Yireo_BingTranslate_Block_Adminhtml_Widget extends Mage_Core_Block_Template
+class Yireo_BingTranslate_Block_Adminhtml_Widget extends Mage_Adminhtml_Block_Template
 {
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        parent::__construct();
-
-        $this->setData('area', 'adminhtml');
-    }
-
     /**
      * Return the current source-language
      *

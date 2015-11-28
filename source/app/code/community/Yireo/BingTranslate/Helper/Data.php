@@ -60,11 +60,16 @@ class Yireo_BingTranslate_Helper_Data extends Mage_Core_Helper_Abstract
      */
     public function hasApiSettings()
     {
+        if(Mage::getStoreConfig('catalog/bingtranslate/bork')) {
+            return true;
+        }
+
         $clientId = $this->getClientId();
         $clientSecret = $this->getClientSecret();
         if (empty($clientId) || empty($clientSecret)) {
             return false;
         }
+
         return true;
     }
 
