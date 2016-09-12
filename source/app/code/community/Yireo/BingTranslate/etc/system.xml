@@ -4,8 +4,8 @@
  * Yireo BingTranslate for Magento 
  *
  * @package     Yireo_BingTranslate
- * @author      Yireo (http://www.yireo.com/)
- * @copyright   Copyright 2015 Yireo (http://www.yireo.com/)
+ * @author      Yireo (https://www.yireo.com/)
+ * @copyright   Copyright 2015 Yireo (https://www.yireo.com/)
  * @license     Open Source License (OSL v3)
  */
 -->
@@ -22,7 +22,7 @@
                     <show_in_store>1</show_in_store>
                     <fields>
                         <client_id translate="label">
-                            <label>Azure Client ID</label>
+                            <label>Azure Name</label>
                             <comment><![CDATA[See <a href="https://datamarket.azure.com/developer/applications">datamarket.azure.com/developer</a>]]></comment>
                             <frontend_type>text</frontend_type>
                             <sort_order>1</sort_order>

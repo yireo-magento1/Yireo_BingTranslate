@@ -3,8 +3,8 @@
  * Yireo BingTranslate for Magento
  *
  * @package     Yireo_BingTranslate
- * @author      Yireo (http://www.yireo.com/)
- * @copyright   Copyright 2015 Yireo (http://www.yireo.com/)
+ * @author      Yireo (https://www.yireo.com/)
+ * @copyright   Copyright 2015 Yireo (https://www.yireo.com/)
  * @license     Open Source License (OSL v3)
  */
 
@@ -59,7 +59,7 @@ class Yireo_BingTranslate_Helper_Observer extends Mage_Core_Helper_Abstract
             . "Event.observe(window, 'load', function() {\n"
             . "    var button = $('bingtranslate_button_" . $attribute_code . "');\n"
             . "    var field = $('" . $html_id . "');\n"
-            . "    if(field && field.disabled) {\n"
+            . "    if(field && field.disabled && button) {\n"
             . "        button.disabled = true;\n"
             . "        button.className = 'disabled';\n"
             . "    }\n"

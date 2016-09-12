@@ -3,8 +3,8 @@
  * Yireo BingTranslate for Magento
  *
  * @package     Yireo_BingTranslate
- * @author      Yireo (http://www.yireo.com/)
- * @copyright   Copyright 2015 Yireo (http://www.yireo.com/)
+ * @author      Yireo (https://www.yireo.com/)
+ * @copyright   Copyright 2015 Yireo (https://www.yireo.com/)
  * @license     Open Source License (OSL v3)
  */
 
@@ -29,7 +29,7 @@ class Yireo_BingTranslate_BingtranslateController extends Mage_Adminhtml_Control
     /**
      * Common method
      *
-     * @return Yireo_BingTranslate_IndexController
+     * @return Yireo_BingTranslate_BingtranslateController
      */
     protected function _initAction()
     {
@@ -406,6 +406,7 @@ class Yireo_BingTranslate_BingtranslateController extends Mage_Adminhtml_Control
      * Helper method to send a specific error
      *
      * @param string $message
+     *
      * @return mixed
      */
     protected function sendError($message = null)
@@ -419,6 +420,7 @@ class Yireo_BingTranslate_BingtranslateController extends Mage_Adminhtml_Control
      * Helper method to send the translation
      *
      * @param string $translation
+     *
      * @return mixed
      */
     protected function sendTranslation($translation = null)
@@ -440,5 +442,15 @@ class Yireo_BingTranslate_BingtranslateController extends Mage_Adminhtml_Control
 
         $this->getResponse()->setHeader('Content-type', 'application/json; charset=utf-8');
         $this->getResponse()->setBody($jsonData);
+    }
+
+    /**
+     * Allow ACL access
+     *
+     * @return bool
+     */
+    protected function _isAllowed()
+    {
+        return Mage::getSingleton('admin/session')->isAllowed('catalog/bingtranslate');
     }
 }

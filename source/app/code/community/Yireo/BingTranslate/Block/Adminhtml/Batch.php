@@ -3,8 +3,8 @@
  * Yireo BingTranslate for Magento
  *
  * @package     Yireo_BingTranslate
- * @author      Yireo (http://www.yireo.com/)
- * @copyright   Copyright 2015 Yireo (http://www.yireo.com/)
+ * @author      Yireo (https://www.yireo.com/)
+ * @copyright   Copyright 2015 Yireo (https://www.yireo.com/)
  * @license     Open Source License (OSL v3)
  */
 
@@ -70,9 +70,13 @@ class Yireo_BingTranslate_Block_Adminhtml_Batch extends Mage_Core_Block_Template
     public function getItemIds()
     {
         if (empty($this->_itemIds)) {
-            $type = $this->getRequest()->getParam('type');
             $key = $this->getRequest()->getParam('massaction_prepare_key');
             $this->_itemIds = $this->getRequest()->getParam($key);
+        }
+
+        if (empty($this->_itemIds)) {
+            $type = $this->getRequest()->getParam('type');
+            $this->_itemIds = $this->getRequest()->getParam($type);
         }
 
         return $this->_itemIds;

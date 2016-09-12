@@ -3,8 +3,8 @@
  * Yireo BingTranslate for Magento
  *
  * @package     Yireo_BingTranslate
- * @author      Yireo (http://www.yireo.com/)
- * @copyright   Copyright 2015 Yireo (http://www.yireo.com/)
+ * @author      Yireo (https://www.yireo.com/)
+ * @copyright   Copyright 2015 Yireo (https://www.yireo.com/)
  * @license     Open Source License (OSL v3)
  */
 
@@ -34,10 +34,10 @@ class Yireo_BingTranslate_Helper_Data extends Mage_Core_Helper_Abstract
     /**
      * Log a message
      *
-     * @param type $message
-     * @param type $variable
+     * @param string $message
+     * @param string $variable
      *
-     * @return type
+     * @return bool
      */
     public function log($message, $variable = null)
     {
@@ -51,6 +51,7 @@ class Yireo_BingTranslate_Helper_Data extends Mage_Core_Helper_Abstract
         }
 
         Mage::log($message, null, 'bingtranslate.log');
+        return true;
     }
 
     /**
@@ -60,7 +61,7 @@ class Yireo_BingTranslate_Helper_Data extends Mage_Core_Helper_Abstract
      */
     public function hasApiSettings()
     {
-        if(Mage::getStoreConfig('catalog/bingtranslate/bork')) {
+        if (Mage::getStoreConfig('catalog/bingtranslate/bork')) {
             return true;
         }
 
@@ -101,8 +102,8 @@ class Yireo_BingTranslate_Helper_Data extends Mage_Core_Helper_Abstract
     public function getButtonLabel()
     {
         $label = Mage::getStoreConfig('catalog/bingtranslate/buttonlabel');
-        $label = str_replace('$FROM', self::getFromTitle(), $label);
-        $label = str_replace('$TO', self::getToTitle(), $label);
+        $label = str_replace('$FROM', $this->getFromTitle(), $label);
+        $label = str_replace('$TO', $this->getToTitle(), $label);
         return $label;
     }
 
@@ -113,9 +114,9 @@ class Yireo_BingTranslate_Helper_Data extends Mage_Core_Helper_Abstract
      */
     public function getFromLanguage()
     {
-        $parent_locale = Mage::getStoreConfig('general/locale/code');
-        $from_language = preg_replace('/_(.*)/', '', $parent_locale);
-        return $from_language;
+        $parentLocale = Mage::getStoreConfig('general/locale/code');
+        $fromLanguage = preg_replace('/_(.*)/', '', $parentLocale);
+        return $fromLanguage;
     }
 
     /**
@@ -125,9 +126,9 @@ class Yireo_BingTranslate_Helper_Data extends Mage_Core_Helper_Abstract
      */
     public function getFromTitle()
     {
-        $from_language = self::getFromLanguage();
-        $from_title = Zend_Locale::getTranslation($from_language, 'language');
-        return $from_title;
+        $fromLanguage = $this->getFromLanguage();
+        $fromTitle = Zend_Locale::getTranslation($fromLanguage, 'language');
+        return $fromTitle;
     }
 
     /**
@@ -141,24 +142,40 @@ class Yireo_BingTranslate_Helper_Data extends Mage_Core_Helper_Abstract
             $store = Mage::app()->getRequest()->getUserParam('store');
         }
 
-        $to_language = Mage::getStoreConfig('catalog/bingtranslate/langcode', $store);
-        if (empty($to_language)) {
-            $to_language = $this->getLanguageFromStore($store);
+        $toLanguage = Mage::getStoreConfig('catalog/bingtranslate/langcode', $store);
+        if (empty($toLanguage)) {
+            $toLanguage = $this->getLanguageFromStore($store);
         }
 
         $controllerName = Mage::app()->getRequest()->getControllerName();
         if ($controllerName == 'cms_block') {
-            $blockId = Mage::app()->getRequest()->getParam('block_id');
-            $storeId = $this->getStoreIdFromBlockId($blockId);
-            $to_language = $this->getLanguageFromStore($storeId);
+            $toLanguage = $this->getToLanguageFromCmsBlock();
 
         } elseif ($controllerName == 'cms_page') {
-            $pageId = Mage::app()->getRequest()->getParam('page_id');
-            $storeId = $this->getStoreIdFromPageId($pageId);
-            $to_language = $this->getLanguageFromStore($storeId);
+            $toLanguage = $this->getToLanguageFromCmsPage();
         }
 
-        return $to_language;
+        return $toLanguage;
+    }
+
+    /**
+     * @return string
+     */
+    protected function getToLanguageFromCmsBlock()
+    {
+        $blockId = Mage::app()->getRequest()->getParam('block_id');
+        $storeId = $this->getStoreIdFromBlockId($blockId);
+        return $this->getLanguageFromStore($storeId);
+    }
+
+    /**
+     * @return string
+     */
+    protected function getToLanguageFromCmsPage()
+    {
+        $pageId = Mage::app()->getRequest()->getParam('page_id');
+        $storeId = $this->getStoreIdFromPageId($pageId);
+        return $this->getLanguageFromStore($storeId);
     }
 
     /**
@@ -168,9 +185,9 @@ class Yireo_BingTranslate_Helper_Data extends Mage_Core_Helper_Abstract
      */
     public function getToTitle()
     {
-        $to_language = self::getToLanguage();
-        $to_language = preg_replace('/\-(.*)$/', '', $to_language);
-        $to_title = Zend_Locale::getTranslation($to_language, 'language');
+        $toLanguage = $this->getToLanguage();
+        $toLanguage = preg_replace('/\-(.*)$/', '', $toLanguage);
+        $to_title = Zend_Locale::getTranslation($toLanguage, 'language');
         return $to_title;
     }
 
@@ -205,6 +222,7 @@ class Yireo_BingTranslate_Helper_Data extends Mage_Core_Helper_Abstract
     public function getStoreIdFromBlockId($blockId)
     {
         if ($blockId > 0) {
+            /** @var Mage_Cms_Model_Block $block */
             $block = Mage::getModel('cms/block')->load($blockId);
             $storeIds = $block->getStoreId();
             if (is_array($storeIds) && count($storeIds) == 1) {
@@ -249,11 +267,11 @@ class Yireo_BingTranslate_Helper_Data extends Mage_Core_Helper_Abstract
     /**
      * Check whether the language-code is supported
      *
-     * @return array
+     * @return bool
      */
     public function isSupportedLanguage($code)
     {
-        $supportedLanguages = Mage::helper('bingtranslate')->getSupportedLanguages();
+        $supportedLanguages = $this->getSupportedLanguages();
         $onlySupportedLanguages = (bool)Mage::getStoreConfig('catalog/bingtranslate/only_supported_languages');
         if ($onlySupportedLanguages == false) {
             return true;

@@ -4,8 +4,8 @@
  * Yireo BingTranslate for Magento 
  *
  * @package     Yireo_BingTranslate
- * @author      Yireo (http://www.yireo.com/)
- * @copyright   Copyright 2015 Yireo (http://www.yireo.com/)
+ * @author      Yireo (https://www.yireo.com/)
+ * @copyright   Copyright 2016 Yireo (https://www.yireo.com/)
  * @license     Open Source License (OSL v3)
  */
 -->
@@ -13,7 +13,7 @@
 
     <modules>
         <Yireo_BingTranslate>
-            <version>3.1.5</version>
+            <version>3.3.2</version>
         </Yireo_BingTranslate>
     </modules>
 
@@ -41,37 +41,46 @@
         <events>
             <controller_action_predispatch>
                 <observers>
-                    <bingtranslate_controller_action_predispatch>
-                        <type>singleton</type>
-                        <class>Yireo_BingTranslate_Model_Observer</class>
-                        <method>controllerActionPredispatch</method>
-                    </bingtranslate_controller_action_predispatch>
+                    <bingtranslate_addFeed>
+                        <class>Yireo_BingTranslate_Model_Observer_AddFeed</class>
+                        <method>execute</method>
+                    </bingtranslate_addFeed>
                 </observers>
             </controller_action_predispatch>
             <core_block_abstract_to_html_before>
                 <observers>
-                    <bingtranslate_add_html>
+                    <bingtranslate_grid_addMassAction>
                         <type>singleton</type>
-                        <class>Yireo_BingTranslate_Model_Observer</class>
-                        <method>coreBlockAbstractToHtmlBefore</method>
-                    </bingtranslate_add_html>
+                        <class>Yireo_BingTranslate_Model_Observer_Block_AddJsWidgets</class>
+                        <method>execute</method>
+                    </bingtranslate_grid_addMassAction>
                 </observers>
             </core_block_abstract_to_html_before>
+            <core_block_abstract_to_html_after>
+                <observers>
+                    <bingtranslate_grid_fixEmptyIds>
+                        <type>singleton</type>
+                        <class>Yireo_BingTranslate_Model_Observer_Block_FixEmptyIds</class>
+                        <method>execute</method>
+                    </bingtranslate_grid_fixEmptyIds>
+                </observers>
+            </core_block_abstract_to_html_after>
             <content_translate_after>
                 <observers>
-                    <bingtranslate_content_translate_after>
+                    <bingtranslate_contenttranslate_addManualTranslations>
                         <type>singleton</type>
-                        <class>Yireo_BingTranslate_Model_Observer</class>
-                        <method>contentTranslateAfter</method>
-                    </bingtranslate_content_translate_after>
+                        <class>Yireo_BingTranslate_Model_Observer_ContentTranslate_AddManualTranslations</class>
+                        <method>execute</method>
+                    </bingtranslate_contenttranslate_addManualTranslations>
                 </observers>
             </content_translate_after>
             <core_block_abstract_prepare_layout_before>
                 <observers>
-                    <bingtranslate_core_block_abstract_prepare_layout_before>
-                        <class>Yireo_BingTranslate_Model_Observer</class>
-                        <method>coreBlockAbstractPrepareLayoutBefore</method>
-                    </bingtranslate_core_block_abstract_prepare_layout_before>
+                    <bingtranslate_grid_addMassAction>
+                        <type>singleton</type>
+                        <class>Yireo_BingTranslate_Model_Observer_Grid_AddMassAction</class>
+                        <method>execute</method>
+                    </bingtranslate_grid_addMassAction>
                 </observers>
             </core_block_abstract_prepare_layout_before>
         </events>
@@ -98,6 +107,13 @@
             <resources>
                 <admin>
                     <children>
+                        <catalog>
+                            <children>
+                                <bingtranslate translate="title" module="bingtranslate">
+                                    <title>Translate via BingTranslate</title>
+                                </bingtranslate>
+                            </children>
+                        </catalog>
                         <system>
                             <children>
                                 <config>
