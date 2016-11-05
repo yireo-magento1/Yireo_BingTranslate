@@ -2,8 +2,8 @@
  * Yireo BingTranslate for Magento
  *
  * @package     Yireo_BingTranslate
- * @author      Yireo (http://www.yireo.com/)
- * @copyright   Copyright 2015 Yireo (http://www.yireo.com/)
+ * @author      Yireo (https://www.yireo.com/)
+ * @copyright   Copyright 2015 Yireo (https://www.yireo.com/)
  * @license     Open Source License (OSL v3)
  */
 
@@ -22,29 +22,32 @@ var YireoBingTranslate = {
 
     ajaxTextBaseUrl: null,
 
-    allowedInputTypes : ['text'],
+    allowedInputTypes: ['text'],
 
-    skipInputNames : ['news_from_date', 'news_to_date', 'special_from_date', 'special_to_date',
+    skipInputNames: ['news_from_date', 'news_to_date', 'special_from_date', 'special_to_date',
         'price', 'special_price', 'msrp', 'custom_design_from', 'custom_design_to', 'weight',
-        'simple_product_inventory_qty'],
+        'simple_product_inventory_qty', 'attribute_code'],
 
-    debug : false,
+    skipInputClasses: ['validate-digits'],
 
-    translateText: function (html_id, from_language, to_language) {
+    debug: true,
+
+    translateText: function (anchor, from_language, to_language) {
 
         // Fetch the from_language and to_language if not yet set
         var new_from_language = $('bingtranslate_source_language').value;
         var new_to_language = $('bingtranslate_destination_language').value;
 
         if (new_from_language && new_from_language != 'auto') {
-            var from_language = new_from_language;
+            from_language = new_from_language;
         }
 
         if (new_to_language && new_to_language != 'auto') {
-            var to_language = new_to_language;
+            to_language = new_to_language;
         }
 
-        var field = $(html_id);
+        var field = jQuery(anchor).parent().children('input');
+
         if (field == null || field.disabled) {
             this.doDebug('Field ' + html_id + ' disabled');
             return false;
@@ -56,7 +59,7 @@ var YireoBingTranslate = {
         }
 
         var ajaxUrl = this.ajaxTextBaseUrl
-                + 'string/' + field.value + '/'
+                + 'string/' + field.val() + '/'
                 + 'from/' + from_language + '/'
                 + 'to/' + to_language + '/'
             ;
@@ -71,11 +74,11 @@ var YireoBingTranslate = {
         var new_to_language = $('bingtranslate_destination_language').value;
 
         if (new_from_language && new_from_language != 'auto') {
-            var from_language = new_from_language;
+            from_language = new_from_language;
         }
 
         if (new_to_language && new_to_language != 'auto') {
-            var to_language = new_to_language;
+            to_language = new_to_language;
         }
 
         // Skip if the languages are equal
@@ -96,8 +99,10 @@ var YireoBingTranslate = {
         // Check if the field is actually enabled
         var field = $(html_id);
         if (field == null || field.disabled) {
-            button.disabled = true;
-            button.className = 'disabled';
+            if (button) {
+                button.disabled = true;
+                button.className = 'disabled';
+            }
             return false;
         }
 
@@ -123,12 +128,16 @@ var YireoBingTranslate = {
                         } else {
                             message = json.error;
                         }
+
                         alert('ERROR: ' + message);
 
                         // Set the new field-value and disable the button
                     } else {
-
-                        $(field).value = json.translation;
+                        if (field instanceof jQuery) {
+                            field.val(json.translation);
+                        } else {
+                            $(field).value = json.translation;
+                        }
 
                         if (tinyMCE) {
                             var editor = tinyMCE.get(html_id);
@@ -156,25 +165,35 @@ var YireoBingTranslate = {
         var inputId = input.attr('id');
         var inputName = input.attr('name');
         var inputType = input.attr('type');
+        var inputClass = input.attr('class');
 
-        if (inputName == undefined) {
-            this.doDebug('Input name undefined');
+        if (inputId == undefined) {
+            //this.doDebug('Input ID undefined');
             return false;
         }
 
-        if (inputId == undefined) {
-            this.doDebug('Input ID undefined');
+        if (inputName == undefined) {
+            //this.doDebug('Input name undefined');
             return false;
         }
 
         if (input.attr('disabled') == 'disabled' || input.prop('readonly')) {
-            //this.doDebug('Input disabled or readonly');
-            //return false;
+            this.doDebug('Input disabled or readonly');
+            return false;
         }
 
         if (this.inArray(inputName, this.skipInputNames) || this.inArray(inputId, this.skipInputNames)) {
             this.doDebug('Input ' + inputName + ' in skip list');
             return true;
+        }
+
+        if (inputClass != undefined) {
+            for (var i = 0; i < this.skipInputClasses.length; i++) {
+                if (inputClass.indexOf(this.skipInputClasses[i]) > -1) {
+                    this.doDebug('Input class ' + inputClass + ' in skip list');
+                    return true;
+                }
+            }
         }
 
         if (this.inArray(inputType, this.allowedInputTypes) == false) {
@@ -185,7 +204,7 @@ var YireoBingTranslate = {
         var parent = input.parent();
         var html = '<div class="bingtranslate-container">'
             + input.prop('outerHTML')
-            + '<a href="#" title="BingTranslate" onclick="javascript:YireoBingTranslate.translateText(\'' + inputId + '\'); return false;">'
+            + '<a href="#" title="BingTranslate" onclick="javascript:YireoBingTranslate.translateText(this); return false;">'
             + '<div class="bingtranslate-icon">'
             + '&nbsp;'
             + '</div>'
@@ -193,7 +212,16 @@ var YireoBingTranslate = {
             + '</div>';
 
         input.replaceWith(html);
-        console.log(inputName + ' / ' + inputId + ' = ' + inputType);
+
+        jQuery('#' + inputId).focus(function() {
+           jQuery(this).parent().addClass('active');
+        });
+
+        jQuery('#' + inputId).blur(function() {
+            jQuery(this).parent().removeClass('active');
+        });
+
+        //console.log(inputName + ' / ' + inputId + ' = ' + inputType);
 
         return true;
     },

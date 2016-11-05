@@ -28,6 +28,13 @@
         </reference>
     </adminhtml_cms_block_edit>
 
+    <adminhtml_catalog_product_attribute_edit>
+        <update handle="bingtranslate_load" />
+        <reference name="bingtranslate_script">
+            <action method="setPageType"><type>attribute</type></action>
+        </reference>
+    </adminhtml_catalog_product_attribute_edit>
+
     <bingtranslate_load>
         <reference name="head">
             <action method="addItem"><type>skin_css</type><name>css/bingtranslate.css</name></action>

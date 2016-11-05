@@ -2,8 +2,8 @@
  * Yireo BingTranslate for Magento
  *
  * @package     Yireo_BingTranslate
- * @author      Yireo (http://www.yireo.com/)
- * @copyright   Copyright 2015 Yireo (http://www.yireo.com/)
+ * @author      Yireo (https://www.yireo.com/)
+ * @copyright   Copyright 2015 Yireo (https://www.yireo.com/)
  * @license     Open Software License
  */
 
@@ -26,11 +26,14 @@ div.bingtranslate-container a {
     text-decoration: none;
     position: absolute;
     top: 2px;
-    right: 10px;
+    right: 3px;
     width: 15px;
 }
 
-div.bingtranslate-icon {
+div.bingtranslate-container.active div.bingtranslate-icon {
     background: transparent url("../images/bingtranslate/icon-language.png") no-repeat top left;
 }
 
+div.bingtranslate-container div.bingtranslate-icon {
+    background: transparent url("../images/bingtranslate/icon-language-inactive.png") no-repeat top left;
+}
