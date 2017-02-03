@@ -311,7 +311,9 @@ class Yireo_BingTranslate_Model_Translator extends Mage_Core_Model_Abstract
 
         if (!empty($data->error)) {
             $error = $this->__('Error while requesting OAuth token: %s', $data->error);
-            if (!empty($data->error_description)) $error .= ' [' . $data->error_description . ']';
+            if (!empty($data->error_description)) {
+                $error .= ' [' . $data->error_description . ']';
+            }
             $this->apiError = $error;
             return false;
         }
