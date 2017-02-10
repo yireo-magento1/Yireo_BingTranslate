@@ -11,7 +11,7 @@
 /**
  * BingTranslate observer
  */
-class Yireo_BingTranslate_Model_Translator
+class Yireo_BingTranslate_Model_Translator extends Varien_Object
 {
     /**
      * @var Yireo_BingTranslate_Helper_Data
@@ -24,26 +24,13 @@ class Yireo_BingTranslate_Model_Translator
     public function __construct()
     {
         $this->helper = Mage::helper('bingtranslate');
+        parent::__construct();
     }
 
     /**
      * Maximum length to translate
      */
     const TEXT_MAX_LENGTH = 10000;
-
-    /**
-     * String containing the API URL
-     *
-     * @var string
-     */
-    protected $apiUrl = 'http://api.microsofttranslator.com/v2/Http.svc/Translate';
-
-    /**
-     * Container for possible API errors
-     *
-     * @var null
-     */
-    protected $apiError = null;
 
     /**
      * String containing the translated content received from the API
@@ -105,7 +92,7 @@ class Yireo_BingTranslate_Model_Translator
         }
 
         if (empty($fromLang)) {
-            $fromLang = $this->getData('from');
+            $fromLang = $this->getData('fromLang');
         }
 
         if (empty($toLang)) {
@@ -128,7 +115,7 @@ class Yireo_BingTranslate_Model_Translator
 
         // Check for reversable strings
         if (preg_match_all('/{{([^}]+)}}/', $text, $matches)) {
-            foreach($matches[0] as $match) {
+            foreach ($matches[0] as $match) {
                 $this->reverseStrings[] = $match;
             }
         }
@@ -139,6 +126,7 @@ class Yireo_BingTranslate_Model_Translator
         // Autoloading
         $this->helper->loader();
 
+        // Setup the parameters
         $params = [];
         $params['handler'] = '\\Yireo\\Translate\\Handler\\MicrosoftTranslate';
         $params['key'] = $clientKey;
@@ -156,12 +144,13 @@ class Yireo_BingTranslate_Model_Translator
         $translator->setText($text);
         $translation = $translator->translate();
 
+        /*
         if (empty($translation)) {
             $apiError = $this->helper->__('Unknown data');
             $apiError .= '[' . $this->helper->__('from %s to %s', $fromLang, $toLang) . ']';
-            $apiError .= var_export($translation, true);
             throw new Exception($apiError);
         }
+        */
 
         return $this->setTranslationOutput($translation, $fromLang, $toLang);
     }
@@ -177,7 +166,7 @@ class Yireo_BingTranslate_Model_Translator
     {
         if (preg_match_all('/{{([^}]+)}}/', $text, $matches)) {
             $i = 0;
-            foreach($matches[0] as $match) {
+            foreach ($matches[0] as $match) {
                 if (isset($this->reverseStrings[$i])) {
                     $text = str_replace($match, $this->reverseStrings[$i], $text);
                 }

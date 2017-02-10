@@ -51,6 +51,7 @@ class Yireo_BingTranslate_Helper_Data extends Mage_Core_Helper_Abstract
         }
 
         Mage::log($message, null, 'bingtranslate.log');
+
         return true;
     }
 

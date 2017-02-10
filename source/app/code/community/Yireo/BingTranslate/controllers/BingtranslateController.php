@@ -24,7 +24,23 @@ class Yireo_BingTranslate_BingtranslateController extends Mage_Adminhtml_Control
     /**
      * @var Yireo_BingTranslate_Model_Translator
      */
-    protected $translator = null;
+    protected $translator;
+
+    /**
+     * @var Yireo_BingTranslate_Helper_Data
+     */
+    protected $helper;
+
+    /**
+     *
+     */
+    protected function _construct()
+    {
+        $this->helper = Mage::helper('bingtranslate');
+        $this->translator = Mage::getSingleton('bingtranslate/translator');
+
+        return parent::_construct();
+    }
 
     /**
      * Common method
@@ -108,24 +124,18 @@ class Yireo_BingTranslate_BingtranslateController extends Mage_Adminhtml_Control
         }
 
         // Fetch the API-settings
-        $clientKey = Mage::helper('bingtranslate')->getClientKey();
+        $clientKey = $this->helper->getClientKey();
 
         // Check for the API-key or client-ID plus client-secret
-        if (Mage::helper('bingtranslate')->hasApiSettings() == false) {
+        if ($this->helper->hasApiSettings() == false) {
             return $this->sendError($this->__('No API-details configured yet'));
         }
 
         // Set these variables for use with the translator
-        $translator = $this->getTranslator();
-        $translator->setData('text', $string);
-        $translator->setData('fromLang', $fromLang);
-        $translator->setData('toLang', $toLang);
-        $translator->setData('clientId', $clientId);
-        $translator->setData('clientSecret', $clientSecret);
-
-        // Load the correct data-model
-        $translator = $this->getTranslator();
-        $translator->setData('text', $string);
+        $this->translator->setData('text', $string);
+        $this->translator->setData('fromLang', $fromLang);
+        $this->translator->setData('toLang', $toLang);
+        $this->translator->setData('clientKey', $clientKey);
 
         // Make the request to the API
         $this->translate();
@@ -150,9 +160,8 @@ class Yireo_BingTranslate_BingtranslateController extends Mage_Adminhtml_Control
         }
 
         // Load the correct data-model
-        $translator = $this->getTranslator();
-        $id = $translator->getData('id');
-        $store = $translator->getData('store');
+        $id = $this->translator->getData('id');
+        $store = $this->translator->getData('store');
 
         $product = Mage::getModel('catalog/product')->setStoreId($store)->load($id);
         if (!$product->getId() > 0) {
@@ -160,7 +169,7 @@ class Yireo_BingTranslate_BingtranslateController extends Mage_Adminhtml_Control
         }
 
         // Load the attribute-value
-        $attribute = $translator->getData('attribute');
+        $attribute = $this->translator->getData('attribute');
         $this->translatorText = $product->getData($attribute);
 
         if (empty($this->translatorText)) {
@@ -171,7 +180,7 @@ class Yireo_BingTranslate_BingtranslateController extends Mage_Adminhtml_Control
             $this->translatorText = str_replace('-', ' ', $this->translatorText);
         }
 
-        $translator->setData('text', $this->translatorText);
+        $this->translator->setData('text', $this->translatorText);
 
         // Make the request to the API
         $this->translate();
@@ -200,9 +209,8 @@ class Yireo_BingTranslate_BingtranslateController extends Mage_Adminhtml_Control
         }
 
         // Load the correct data-model
-        $translator = $this->getTranslator();
-        $id = $translator->getData('id');
-        $store = $translator->getData('store');
+        $id = $this->translator->getData('id');
+        $store = $this->translator->getData('store');
 
         $category = Mage::getModel('catalog/category')->setStoreId($store)->load($id);
         if (!$category->getId() > 0) {
@@ -210,13 +218,13 @@ class Yireo_BingTranslate_BingtranslateController extends Mage_Adminhtml_Control
         }
 
         // Load the attribute-value
-        $attribute = $translator->getData('attribute');
+        $attribute = $this->translator->getData('attribute');
         $text = $category->getData($attribute);
         if (empty($text)) {
             return $this->sendError($this->__('No category-data found for attribute %s', $attribute));
         }
 
-        $translator->setData('text', $text);
+        $this->translator->setData('text', $text);
 
         // Make the request to the API
         $this->translate();
@@ -241,9 +249,8 @@ class Yireo_BingTranslate_BingtranslateController extends Mage_Adminhtml_Control
         }
 
         // Load the correct data-model
-        $translator = $this->getTranslator();
-        $id = $translator->getData('id');
-        $store = $translator->getData('store');
+        $id = $this->translator->getData('id');
+        $store = $this->translator->getData('store');
 
         $page = Mage::getModel('cms/page')->setStoreId($store)->load($id);
         if (!$page->getId() > 0) {
@@ -251,12 +258,12 @@ class Yireo_BingTranslate_BingtranslateController extends Mage_Adminhtml_Control
         }
 
         // Load the attribute-value
-        $attribute = $translator->getData('attribute');
+        $attribute = $this->translator->getData('attribute');
         $text = $page->getData($attribute);
         if (empty($text)) {
             return $this->sendError($this->__('No page-data found for attribute %s', $attribute));
         }
-        $translator->setData('text', $text);
+        $this->translator->setData('text', $text);
 
         // Make the request to the API
         $this->translate();
@@ -281,22 +288,21 @@ class Yireo_BingTranslate_BingtranslateController extends Mage_Adminhtml_Control
         }
 
         // Load the correct data-model
-        $translator = $this->getTranslator();
-        $id = $translator->getData('id');
-        $store = $translator->getData('store');
+        $id = $this->translator->getData('id');
+        $store = $this->translator->getData('store');
         $block = Mage::getModel('cms/block')->setStoreId($store)->load($id);
         if (!$block->getId() > 0) {
             return $this->sendError($this->__('No CMS-block ID given'));
         }
 
         // Load the attribute-value
-        $attribute = $translator->getData('attribute');
+        $attribute = $this->translator->getData('attribute');
         $text = $block->getData($attribute);
 
         if (empty($text)) {
             return $this->sendError($this->__('No block-data found for attribute %s', $attribute));
         }
-        $translator->setData('text', $text);
+        $this->translator->setData('text', $text);
 
         // Make the request to the API
         $this->translate();
@@ -344,34 +350,22 @@ class Yireo_BingTranslate_BingtranslateController extends Mage_Adminhtml_Control
         }
 
         // Fetch the API-settings
-        $clientKey = Mage::helper('bingtranslate')->getClientKey();
+        $clientKey = $this->helper->getClientKey();
 
         // Check for the API-key or client-ID plus client-secret
-        if (Mage::helper('bingtranslate')->hasApiSettings() == false) {
+        if ($this->helper->hasApiSettings() == false) {
             return $this->sendError($this->__('No API-details configured yet'));
         }
 
         // Set these variables for use with the translator
-        $translator = $this->getTranslator();
-        $translator->setData('id', $id);
-        $translator->setData('attribute', $attribute);
-        $translator->setData('fromLang', $fromLang);
-        $translator->setData('toLang', $toLang);
-        $translator->setData('store', $store);
-        $translator->setData('clientId', $clientKey);
+        $this->translator->setData('id', $id);
+        $this->translator->setData('attribute', $attribute);
+        $this->translator->setData('fromLang', $fromLang);
+        $this->translator->setData('toLang', $toLang);
+        $this->translator->setData('store', $store);
+        $this->translator->setData('clientKey', $clientKey);
 
         return true;
-    }
-
-
-    /**
-     * Method to return the translator object
-     *
-     * @return Yireo_BingTranslate_Model_Translator
-     */
-    public function getTranslator()
-    {
-        return Mage::getSingleton('bingtranslate/translator');
     }
 
     /**
@@ -381,8 +375,6 @@ class Yireo_BingTranslate_BingtranslateController extends Mage_Adminhtml_Control
      */
     protected function translate()
     {
-        $this->translator = $this->getTranslator();
-
         try {
             $this->translatorText = $this->translator->translate();
         } catch(Exception $e) {

@@ -6,3 +6,4 @@ source/app/etc/modules/Yireo_BingTranslate.xml                          app/etc/
 source/skin/adminhtml/default/default/js/bingtranslate                  skin/adminhtml/default/default/js/bingtranslate
 source/skin/adminhtml/default/default/css/bingtranslate                 skin/adminhtml/default/default/css/bingtranslate
 source/skin/adminhtml/default/default/images/bingtranslate              skin/adminhtml/default/default/images/bingtranslate
+source/lib/Yireo							lib/Yireo
