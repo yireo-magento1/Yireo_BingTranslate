@@ -108,8 +108,7 @@ class Yireo_BingTranslate_BingtranslateController extends Mage_Adminhtml_Control
         }
 
         // Fetch the API-settings
-        $clientId = Mage::helper('bingtranslate')->getClientId();
-        $clientSecret = Mage::helper('bingtranslate')->getClientSecret();
+        $clientKey = Mage::helper('bingtranslate')->getClientKey();
 
         // Check for the API-key or client-ID plus client-secret
         if (Mage::helper('bingtranslate')->hasApiSettings() == false) {
@@ -345,8 +344,7 @@ class Yireo_BingTranslate_BingtranslateController extends Mage_Adminhtml_Control
         }
 
         // Fetch the API-settings
-        $clientId = Mage::helper('bingtranslate')->getClientId();
-        $clientSecret = Mage::helper('bingtranslate')->getClientSecret();
+        $clientKey = Mage::helper('bingtranslate')->getClientKey();
 
         // Check for the API-key or client-ID plus client-secret
         if (Mage::helper('bingtranslate')->hasApiSettings() == false) {
@@ -360,8 +358,7 @@ class Yireo_BingTranslate_BingtranslateController extends Mage_Adminhtml_Control
         $translator->setData('fromLang', $fromLang);
         $translator->setData('toLang', $toLang);
         $translator->setData('store', $store);
-        $translator->setData('clientId', $clientId);
-        $translator->setData('clientSecret', $clientSecret);
+        $translator->setData('clientId', $clientKey);
 
         return true;
     }
@@ -385,7 +382,12 @@ class Yireo_BingTranslate_BingtranslateController extends Mage_Adminhtml_Control
     protected function translate()
     {
         $this->translator = $this->getTranslator();
-        $this->translatorText = $this->translator->translate();
+
+        try {
+            $this->translatorText = $this->translator->translate();
+        } catch(Exception $e) {
+            $this->sendError($e->getMessage());
+        }
     }
 
     /**

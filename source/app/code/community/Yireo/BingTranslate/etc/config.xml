@@ -13,7 +13,7 @@
 
     <modules>
         <Yireo_BingTranslate>
-            <version>3.3.2</version>
+            <version>4.0.0</version>
         </Yireo_BingTranslate>
     </modules>
 
@@ -146,8 +146,7 @@
     <default>
         <catalog>
             <bingtranslate>
-                <client_id></client_id>
-                <client_secret></client_secret>
+                <client_key></client_key>
                 <buttonlabel>BingTranslate from $FROM to $TO</buttonlabel>
                 <langcode></langcode>
                 <only_supported_languages>1</only_supported_languages>

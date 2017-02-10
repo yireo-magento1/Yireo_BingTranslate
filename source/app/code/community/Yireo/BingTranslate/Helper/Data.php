@@ -55,6 +55,16 @@ class Yireo_BingTranslate_Helper_Data extends Mage_Core_Helper_Abstract
     }
 
     /**
+     * Initialize the autoloader
+     */
+    public function loader()
+    {
+        require_once BP . '/lib/Yireo/Common/System/Autoloader.php';
+        \Yireo\Common\System\Autoloader::addPath(BP . '/lib/Yireo');
+        \Yireo\Common\System\Autoloader::init();
+    }
+
+    /**
      * Check whether the API-details are configured
      *
      * @return bool
@@ -65,9 +75,8 @@ class Yireo_BingTranslate_Helper_Data extends Mage_Core_Helper_Abstract
             return true;
         }
 
-        $clientId = $this->getClientId();
-        $clientSecret = $this->getClientSecret();
-        if (empty($clientId) || empty($clientSecret)) {
+        $clientKey = $this->getClientKey();
+        if (empty($clientKey)) {
             return false;
         }
 
@@ -79,19 +88,9 @@ class Yireo_BingTranslate_Helper_Data extends Mage_Core_Helper_Abstract
      *
      * @return string
      */
-    public function getClientId()
+    public function getClientKey()
     {
-        return Mage::getStoreConfig('catalog/bingtranslate/client_id');
-    }
-
-    /**
-     * Return the configured client-secret
-     *
-     * @return mixed
-     */
-    public function getClientSecret()
-    {
-        return Mage::getStoreConfig('catalog/bingtranslate/client_secret');
+        return Mage::getStoreConfig('catalog/bingtranslate/client_key');
     }
 
     /**

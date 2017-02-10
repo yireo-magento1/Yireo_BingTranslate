@@ -37,7 +37,7 @@
 
     <bingtranslate_load>
         <reference name="head">
-            <action method="addItem"><type>skin_css</type><name>css/bingtranslate.css</name></action>
+            <action method="addItem"><type>skin_css</type><name>css/bingtranslate/main.css</name></action>
             <action method="addItem" ifconfig="catalog/bingtranslate/jquery"><type>skin_js</type><name>js/bingtranslate/jquery.js</name></action>
             <action method="addItem" ifconfig="catalog/bingtranslate/jquery"><type>skin_js</type><name>js/bingtranslate/jquery-noconflict.js</name></action>
             <action method="addItem"><type>skin_js</type><name>js/bingtranslate/bingtranslate.js</name></action>

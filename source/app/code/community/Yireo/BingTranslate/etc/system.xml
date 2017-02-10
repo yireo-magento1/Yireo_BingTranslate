@@ -14,32 +14,22 @@
         <catalog>
             <groups>
                 <bingtranslate translate="label">
-                    <label>BingTranslate</label>
+                    <label>Microsoft Translator</label>
                     <frontend_type>text</frontend_type>
                     <sort_order>900</sort_order>
                     <show_in_default>1</show_in_default>
                     <show_in_website>1</show_in_website>
                     <show_in_store>1</show_in_store>
                     <fields>
-                        <client_id translate="label">
-                            <label>Azure Name</label>
-                            <comment><![CDATA[See <a href="https://datamarket.azure.com/developer/applications">datamarket.azure.com/developer</a>]]></comment>
+                        <client_key translate="label">
+                            <label>Subscription Key</label>
+                            <comment><![CDATA[See <a target="_new" href="http://docs.microsofttranslator.com/text-translate.html">Microsoft instructions</a>]]></comment>
                             <frontend_type>text</frontend_type>
                             <sort_order>1</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                        </client_id>
-
-                        <client_secret translate="label">
-                            <label>Azure Client Secret</label>
-                            <comment><![CDATA[See <a href="https://datamarket.azure.com/developer/applications">datamarket.azure.com/developer</a>]]></comment>
-                            <frontend_type>text</frontend_type>
-                            <sort_order>2</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                        </client_secret>
+                        </client_key>
 
                         <buttonlabel translate="label">
                             <label>Button format</label>
