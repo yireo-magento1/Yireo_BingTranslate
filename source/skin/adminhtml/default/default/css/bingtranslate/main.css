@@ -31,9 +31,9 @@ div.bingtranslate-container a {
 }
 
 div.bingtranslate-container.active div.bingtranslate-icon {
-    background: transparent url("../images/bingtranslate/icon-language.png") no-repeat top left;
+    background: transparent url("../../images/bingtranslate/icon-language.png") no-repeat top left;
 }
 
 div.bingtranslate-container div.bingtranslate-icon {
-    background: transparent url("../images/bingtranslate/icon-language-inactive.png") no-repeat top left;
+    background: transparent url("../../images/bingtranslate/icon-language-inactive.png") no-repeat top left;
 }
