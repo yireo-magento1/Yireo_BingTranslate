@@ -109,6 +109,7 @@ class MicrosoftTranslate implements HandlerInterface
         $translation = str_replace('% ', '%', $translation);
         $translation = urldecode($translation);
         $translation = preg_replace('/([\ \t\n\r]+)/', ' ', $translation);
+        $translation = str_replace(' , ', ', ', $translation);
 
         return $translation;
     }
