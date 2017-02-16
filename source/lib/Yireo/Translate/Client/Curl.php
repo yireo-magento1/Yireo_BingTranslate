@@ -66,6 +66,11 @@ class Curl
             throw new \Exception(sprintf('Unknown HTTP status "%s"; CURL dump: %s; Response: %s', $curlInfo['http_code'], var_export($curlInfo, true), $response));
         }
 
+        /*if (strstr($this->url, 'issueToken') == false) {
+            print_r($curlInfo);
+            print_r($response);exit;
+        }*/
+
         curl_close($ch);
         return $response;
     }
