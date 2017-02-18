@@ -51,7 +51,11 @@ class Curl
 
         if ($this->requestType == 'POST') {
             curl_setopt($ch, CURLOPT_POST, true);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $this->data);
+            if (is_array($this->data)) {
+                curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($this->data));
+            } else {
+                curl_setopt($ch, CURLOPT_POSTFIELDS, $this->data);
+            }
         }
 
         $response = curl_exec($ch);
@@ -63,13 +67,8 @@ class Curl
 
         $curlInfo = curl_getinfo($ch);
         if (isset($curlInfo['http_code']) && $curlInfo['http_code'] !== 200) {
-            throw new \Exception(sprintf('Unknown HTTP status "%s"; CURL dump: %s; Response: %s', $curlInfo['http_code'], var_export($curlInfo, true), $response));
+            throw new \Exception(sprintf('HTTP status "%s"; CURL dump: %s; Response: %s', $curlInfo['http_code'], var_export($curlInfo, true), $response));
         }
-
-        /*if (strstr($this->url, 'issueToken') == false) {
-            print_r($curlInfo);
-            print_r($response);exit;
-        }*/
 
         curl_close($ch);
         return $response;

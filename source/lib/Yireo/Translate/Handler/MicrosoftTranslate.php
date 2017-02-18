@@ -11,6 +11,7 @@ namespace Yireo\Translate\Handler;
 use Yireo\Translate\Api\HandlerInterface;
 use Yireo\Translate\Exception\InvalidHtml;
 use Yireo\Translate\Exception\TooManyCharacters;
+use Yireo\Translate\Exception\EmptyToken;
 use Yireo\Translate\Client\Curl as CurlClient;
 
 /**
@@ -21,7 +22,12 @@ class MicrosoftTranslate implements HandlerInterface
     /**
      * API URL
      */
-    const URL = 'https://api.microsofttranslator.com/v2/Http.svc/Translate';
+    const TRANSLATE_URL = 'https://api.microsofttranslator.com/v2/Http.svc/Translate';
+
+    /**
+     * API URL
+     */
+    const TRANSLATEARRAY_URL = 'https://api.microsofttranslator.com/v2/Http.svc/TranslateArray';
 
     /**
      * @var string
@@ -71,10 +77,13 @@ class MicrosoftTranslate implements HandlerInterface
     /**
      * @throws InvalidHtml
      * @throws TooManyCharacters
+     * @throws \Yireo\Translate\Exception\EmptyToken
      * @return string
      */
     public function translate()
     {
+        $this->sanitizeText();
+
         if ($this->getContentType() == 'text/html' && !$this->isValidHtml($this->text)) {
             throw new InvalidHtml('Text does not contain valid HTML');
         }
@@ -85,23 +94,78 @@ class MicrosoftTranslate implements HandlerInterface
 
         $token = new MicrosoftTranslate\Token($this->params);
 
+        if (empty($token)) {
+            throw new EmptyToken('Received empty token');
+        }
+
         $bearerHeader = "Authorization: Bearer " . $token->toString();
-        $headers = [];
-        $headers[] = $bearerHeader;
+        $headers = [$bearerHeader];
         $headers[] = 'Content-Type: text/xml';
 
-        $urlParams = [];
-        $urlParams['to'] = $this->toLanguage;
-        $urlParams['from'] = $this->fromLanguage;
-        $urlParams['contentType'] = $this->getContentType();
-        $urlParams['category'] = $this->getCategory();
-        $urlParams['text'] = urlencode($this->text);
+        //return $this->_translateArray($headers);
+        return $this->_translate($headers);
+    }
 
-        $translateUrl = self::URL . '?' . http_build_query($urlParams);
+    /**
+     * @param $headers
+     *
+     * @return mixed|string
+     */
+    protected function _translate($headers)
+    {
+        $data = [];
+        $data['to'] = $this->toLanguage;
+        $data['from'] = $this->fromLanguage;
+        $data['contentType'] = $this->getContentType();
+        $data['category'] = $this->getCategory();
+        $data['text'] = $this->text;
+
+        $translateUrl = self::TRANSLATE_URL . '?' . http_build_query($data);
         $client = new CurlClient($translateUrl, $headers);
+
         $response = $client->call();
 
         return $this->getTranslationFromXml($response);
+    }
+
+    /**
+     * Currently not working
+     *
+     * @param $headers
+     *
+     * @return mixed|string
+     */
+    protected function _translateArray($headers)
+    {
+        $this->text = strip_tags($this->text);
+        $lines = explode('. ', $this->text);
+        foreach($lines as $lineId => $line) {
+            $lines[$lineId] = trim($line);
+        }
+
+        $data = [];
+        $data['to'] = $this->toLanguage;
+        $data['from'] = $this->fromLanguage;
+        $data['texts'] = $lines;
+
+        $translateUrl = self::TRANSLATEARRAY_URL;
+        $client = new CurlClient($translateUrl, $headers, $data, 'POST');
+
+        $response = $client->call();
+
+        return $this->getTranslationFromXml($response);
+    }
+
+    /**
+     * Sanitize text
+     */
+    protected function sanitizeText()
+    {
+        $this->text = trim($this->text);
+        $chars = ["\n", "\r", 0xA, 0xB, 0xC, 0xD, 0x85, 0x2028, 0x2029];
+        foreach ($chars as $char) {
+            $this->text = str_replace($char, ' ', $this->text);
+        }
     }
 
     /**
@@ -151,6 +215,8 @@ class MicrosoftTranslate implements HandlerInterface
      */
     protected function isValidHtml($string)
     {
+        return true;
+
         $start = strpos($string, '<');
         $end = strrpos($string, '>', $start);
         $len = strlen($string);
@@ -170,7 +236,7 @@ class MicrosoftTranslate implements HandlerInterface
         simplexml_load_string($string);
 
         foreach (libxml_get_errors() as $error) {
-            throw new \Exception($error->code . ': ' . trim($error->message) . ' [line ' . $error->line . ']');
+            throw new InvalidHtml($error->code . ': ' . trim($error->message) . ' [line ' . $error->line . ']');
         }
 
         return (bool)count(libxml_get_errors()) == 0;
