@@ -45,7 +45,7 @@
 
         <reference name="before_body_end">
             <block type="bingtranslate/adminhtml_script" name="bingtranslate_script" template="bingtranslate/script.phtml" />
-            <block type="bingtranslate/adminhtml_widget" name="bingtranslate_widget" template="bingtranslate/widget.phtml" after="-" />
+            <block type="bingtranslate/adminhtml_widget" name="bingtranslate_widget" template="bingtranslate/widget.phtml" />
         </reference>
     </bingtranslate_load>
 

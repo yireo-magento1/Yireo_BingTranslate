@@ -32,14 +32,14 @@ class Yireo_BingTranslate_BingtranslateController extends Mage_Adminhtml_Control
     protected $helper;
 
     /**
-     *
+     * @return void
      */
     protected function _construct()
     {
         $this->helper = Mage::helper('bingtranslate');
         $this->translator = Mage::getSingleton('bingtranslate/translator');
 
-        return parent::_construct();
+        parent::_construct();
     }
 
     /**
@@ -119,7 +119,7 @@ class Yireo_BingTranslate_BingtranslateController extends Mage_Adminhtml_Control
         }
 
         // Set the source language to empty, if it is the same as the destination language
-        if ($fromLang == $toLang) {
+        if ($fromLang === $toLang) {
             $fromLang = null;
         }
 
@@ -127,7 +127,7 @@ class Yireo_BingTranslate_BingtranslateController extends Mage_Adminhtml_Control
         $clientKey = $this->helper->getClientKey();
 
         // Check for the API-key or client-ID plus client-secret
-        if ($this->helper->hasApiSettings() == false) {
+        if ($this->helper->hasApiSettings() === false) {
             return $this->sendError($this->__('No API-details configured yet'));
         }
 
@@ -155,7 +155,7 @@ class Yireo_BingTranslate_BingtranslateController extends Mage_Adminhtml_Control
     public function productAction()
     {
         // Load the initial data, and don't continue if this fails
-        if ($this->preload() == false) {
+        if ($this->preload() === false) {
             return null;
         }
 
@@ -163,6 +163,7 @@ class Yireo_BingTranslate_BingtranslateController extends Mage_Adminhtml_Control
         $id = $this->translator->getData('id');
         $store = $this->translator->getData('store');
 
+        /** @var Mage_Catalog_Model_Product $product */
         $product = Mage::getModel('catalog/product')->setStoreId($store)->load($id);
         if (!$product->getId() > 0) {
             return $this->sendError($this->__('No product ID given'));
@@ -176,7 +177,7 @@ class Yireo_BingTranslate_BingtranslateController extends Mage_Adminhtml_Control
             return $this->sendError($this->__('No product-data found for attribute %s', $attribute));
         }
 
-        if ($attribute == 'url_key') {
+        if ($attribute === 'url_key') {
             $this->translatorText = str_replace('-', ' ', $this->translatorText);
         }
 
@@ -185,7 +186,7 @@ class Yireo_BingTranslate_BingtranslateController extends Mage_Adminhtml_Control
         // Make the request to the API
         $this->translate();
 
-        if ($attribute == 'url_key') {
+        if ($attribute === 'url_key') {
             $this->translatorText = str_replace(' ', '-', strtolower($this->translatorText));
         }
 
@@ -204,7 +205,7 @@ class Yireo_BingTranslate_BingtranslateController extends Mage_Adminhtml_Control
     public function categoryAction()
     {
         // Load the initial data, and don't continue if this fails
-        if ($this->preload() == false) {
+        if ($this->preload() === false) {
             return null;
         }
 
@@ -212,6 +213,7 @@ class Yireo_BingTranslate_BingtranslateController extends Mage_Adminhtml_Control
         $id = $this->translator->getData('id');
         $store = $this->translator->getData('store');
 
+        /** @var Mage_Catalog_Model_Category $category */
         $category = Mage::getModel('catalog/category')->setStoreId($store)->load($id);
         if (!$category->getId() > 0) {
             return $this->sendError($this->__('No category ID given'));
@@ -244,7 +246,7 @@ class Yireo_BingTranslate_BingtranslateController extends Mage_Adminhtml_Control
     public function pageAction()
     {
         // Load the initial data, and don't continue if this fails
-        if ($this->preload() == false) {
+        if ($this->preload() === false) {
             return null;
         }
 
@@ -263,6 +265,7 @@ class Yireo_BingTranslate_BingtranslateController extends Mage_Adminhtml_Control
         if (empty($text)) {
             return $this->sendError($this->__('No page-data found for attribute %s', $attribute));
         }
+
         $this->translator->setData('text', $text);
 
         // Make the request to the API
@@ -283,7 +286,7 @@ class Yireo_BingTranslate_BingtranslateController extends Mage_Adminhtml_Control
     public function blockAction()
     {
         // Load the initial data, and don't continue if this fails
-        if ($this->preload() == false) {
+        if ($this->preload() === false) {
             return null;
         }
 
@@ -298,10 +301,10 @@ class Yireo_BingTranslate_BingtranslateController extends Mage_Adminhtml_Control
         // Load the attribute-value
         $attribute = $this->translator->getData('attribute');
         $text = $block->getData($attribute);
-
         if (empty($text)) {
             return $this->sendError($this->__('No block-data found for attribute %s', $attribute));
         }
+
         $this->translator->setData('text', $text);
 
         // Make the request to the API
@@ -345,7 +348,7 @@ class Yireo_BingTranslate_BingtranslateController extends Mage_Adminhtml_Control
         }
 
         // Set the source language to empty, if it is the same as the destination language
-        if ($fromLang == $toLang) {
+        if ($fromLang === $toLang) {
             $fromLang = null;
         }
 
@@ -353,7 +356,7 @@ class Yireo_BingTranslate_BingtranslateController extends Mage_Adminhtml_Control
         $clientKey = $this->helper->getClientKey();
 
         // Check for the API-key or client-ID plus client-secret
-        if ($this->helper->hasApiSettings() == false) {
+        if ($this->helper->hasApiSettings() === false) {
             return $this->sendError($this->__('No API-details configured yet'));
         }
 
@@ -393,6 +396,7 @@ class Yireo_BingTranslate_BingtranslateController extends Mage_Adminhtml_Control
     {
         $result = array('message' => $message);
         $this->sendJsonResponse($result);
+
         return true;
     }
 
@@ -402,11 +406,13 @@ class Yireo_BingTranslate_BingtranslateController extends Mage_Adminhtml_Control
      * @param string $message
      *
      * @return mixed
+     * @throws Exception
      */
     protected function sendError($message = null)
     {
         $result = array('error' => $message);
         $this->sendJsonResponse($result);
+
         return false;
     }
 
@@ -421,6 +427,7 @@ class Yireo_BingTranslate_BingtranslateController extends Mage_Adminhtml_Control
     {
         $result = array('translation' => $translation);
         $this->sendJsonResponse($result);
+
         return null;
     }
 
@@ -436,6 +443,8 @@ class Yireo_BingTranslate_BingtranslateController extends Mage_Adminhtml_Control
 
         $this->getResponse()->setHeader('Content-type', 'application/json; charset=utf-8');
         $this->getResponse()->setBody($jsonData);
+        $this->getResponse()->sendResponse();
+        exit;
     }
 
     /**

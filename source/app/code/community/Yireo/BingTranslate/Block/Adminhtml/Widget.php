@@ -14,13 +14,28 @@
 class Yireo_BingTranslate_Block_Adminhtml_Widget extends Mage_Adminhtml_Block_Template
 {
     /**
+     * @var Yireo_BingTranslate_Helper_Data
+     */
+    protected $moduleHelper;
+
+    /**
+     * Internal constructor
+     */
+    protected function _construct()
+    {
+        $this->moduleHelper = Mage::helper('bingtranslate');
+
+        parent::_construct();
+    }
+
+    /**
      * Return the current source-language
      *
      * @return string
      */
     public function getSourceLanguage()
     {
-        return Mage::helper('bingtranslate')->getFromLanguage();
+        return $this->moduleHelper->getFromLanguage();
     }
 
     /**
@@ -31,7 +46,7 @@ class Yireo_BingTranslate_Block_Adminhtml_Widget extends Mage_Adminhtml_Block_Te
      */
     public function getDestinationLanguage($stripped = true)
     {
-        $code = Mage::helper('bingtranslate')->getToLanguage();
+        $code = $this->moduleHelper->getToLanguage();
         if ($stripped) {
             return preg_replace('/\-(.*)$/', '', $code);
         } else {
@@ -60,7 +75,7 @@ class Yireo_BingTranslate_Block_Adminhtml_Widget extends Mage_Adminhtml_Block_Te
                 continue;
             }
 
-            if (Mage::helper('bingtranslate')->isSupportedLanguage($code) == false) {
+            if ($this->moduleHelper->isSupportedLanguage($code) == false) {
                 continue;
             }
 

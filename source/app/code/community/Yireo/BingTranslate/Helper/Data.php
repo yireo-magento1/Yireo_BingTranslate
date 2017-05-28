@@ -24,7 +24,7 @@ class Yireo_BingTranslate_Helper_Data extends Mage_Core_Helper_Abstract
             return false;
         }
 
-        if ($this->hasApiSettings() == false) {
+        if ($this->hasApiSettings() === false) {
             return false;
         }
 
@@ -42,7 +42,7 @@ class Yireo_BingTranslate_Helper_Data extends Mage_Core_Helper_Abstract
     public function log($message, $variable = null)
     {
         $logging = (bool)Mage::getStoreConfig('catalog/bingtranslate/logging');
-        if ($logging == false) {
+        if ($logging === false) {
             return false;
         }
 
@@ -104,6 +104,7 @@ class Yireo_BingTranslate_Helper_Data extends Mage_Core_Helper_Abstract
         $label = Mage::getStoreConfig('catalog/bingtranslate/buttonlabel');
         $label = str_replace('$FROM', $this->getFromTitle(), $label);
         $label = str_replace('$TO', $this->getToTitle(), $label);
+
         return $label;
     }
 
@@ -116,6 +117,7 @@ class Yireo_BingTranslate_Helper_Data extends Mage_Core_Helper_Abstract
     {
         $parentLocale = Mage::getStoreConfig('general/locale/code');
         $fromLanguage = preg_replace('/_(.*)/', '', $parentLocale);
+
         return $fromLanguage;
     }
 
@@ -128,6 +130,7 @@ class Yireo_BingTranslate_Helper_Data extends Mage_Core_Helper_Abstract
     {
         $fromLanguage = $this->getFromLanguage();
         $fromTitle = Zend_Locale::getTranslation($fromLanguage, 'language');
+
         return $fromTitle;
     }
 
@@ -165,6 +168,7 @@ class Yireo_BingTranslate_Helper_Data extends Mage_Core_Helper_Abstract
     {
         $blockId = Mage::app()->getRequest()->getParam('block_id');
         $storeId = $this->getStoreIdFromBlockId($blockId);
+
         return $this->getLanguageFromStore($storeId);
     }
 
@@ -175,6 +179,7 @@ class Yireo_BingTranslate_Helper_Data extends Mage_Core_Helper_Abstract
     {
         $pageId = Mage::app()->getRequest()->getParam('page_id');
         $storeId = $this->getStoreIdFromPageId($pageId);
+
         return $this->getLanguageFromStore($storeId);
     }
 
@@ -188,6 +193,7 @@ class Yireo_BingTranslate_Helper_Data extends Mage_Core_Helper_Abstract
         $toLanguage = $this->getToLanguage();
         $toLanguage = preg_replace('/\-(.*)$/', '', $toLanguage);
         $to_title = Zend_Locale::getTranslation($toLanguage, 'language');
+
         return $to_title;
     }
 
@@ -200,16 +206,24 @@ class Yireo_BingTranslate_Helper_Data extends Mage_Core_Helper_Abstract
      */
     public function getStoreIdFromPageId($pageId)
     {
-        if ($pageId > 0) {
-            $page = Mage::getModel('cms/page')->load($pageId);
-            $storeIds = $page->getStoreId();
-            if (is_array($storeIds) && count($storeIds) == 1) {
-                $storeId = $storeIds[0];
-                return $storeId;
-            }
+        if (!$pageId > 0) {
+            return false;
         }
 
-        return false;
+        $page = Mage::getModel('cms/page')->load($pageId);
+        $storeIds = $page->getStoreId();
+
+        if (!is_array($storeIds)) {
+            return false;
+        }
+
+        if (count($storeIds) !== 1) {
+            return false;
+        }
+
+        $storeId = $storeIds[0];
+
+        return $storeId;
     }
 
     /**
@@ -221,14 +235,16 @@ class Yireo_BingTranslate_Helper_Data extends Mage_Core_Helper_Abstract
      */
     public function getStoreIdFromBlockId($blockId)
     {
-        if ($blockId > 0) {
-            /** @var Mage_Cms_Model_Block $block */
-            $block = Mage::getModel('cms/block')->load($blockId);
-            $storeIds = $block->getStoreId();
-            if (is_array($storeIds) && count($storeIds) == 1) {
-                $storeId = $storeIds[0];
-                return $storeId;
-            }
+        if (!$blockId > 0) {
+            return false;
+        }
+
+        /** @var Mage_Cms_Model_Block $block */
+        $block = Mage::getModel('cms/block')->load($blockId);
+        $storeIds = $block->getStoreId();
+        if (is_array($storeIds) && count($storeIds) == 1) {
+            $storeId = $storeIds[0];
+            return $storeId;
         }
 
         return false;
@@ -245,6 +261,7 @@ class Yireo_BingTranslate_Helper_Data extends Mage_Core_Helper_Abstract
     {
         $locale = Mage::getStoreConfig('general/locale/code', $store);
         $language = preg_replace('/_(.*)/', '', $locale);
+
         return $language;
     }
 
@@ -261,6 +278,7 @@ class Yireo_BingTranslate_Helper_Data extends Mage_Core_Helper_Abstract
                 return $store;
             }
         }
+
         return Mage::getModel('core/store');
     }
 
@@ -273,7 +291,7 @@ class Yireo_BingTranslate_Helper_Data extends Mage_Core_Helper_Abstract
     {
         $supportedLanguages = $this->getSupportedLanguages();
         $onlySupportedLanguages = (bool)Mage::getStoreConfig('catalog/bingtranslate/only_supported_languages');
-        if ($onlySupportedLanguages == false) {
+        if ($onlySupportedLanguages === false) {
             return true;
         }
 

@@ -106,7 +106,7 @@ class Translator
     public function getTranslatedText()
     {
         if ($this->text === $this->translatedText) {
-            throw new \Yireo\Translate\Exception\SameTranslation();
+            throw new \Yireo\Translate\Exception\SameTranslation('Translation is same as origin');
         }
 
         return $this->translatedText;

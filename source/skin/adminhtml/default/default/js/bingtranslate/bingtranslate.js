@@ -70,8 +70,13 @@ var YireoBingTranslate = {
     translateAttribute: function (data_id, attribute_code, html_id, store_id, from_language, to_language) {
 
         // Fetch the from_language and to_language if not yet set
-        var new_from_language = $('bingtranslate_source_language').value;
-        var new_to_language = $('bingtranslate_destination_language').value;
+        if ($('bingtranslate_source_language')) {
+            var new_from_language = $('bingtranslate_source_language').value;
+        }
+
+        if ($('bingtranslate_destination_language')) {
+            var new_to_language = $('bingtranslate_destination_language').value;
+        }
 
         if (new_from_language && new_from_language != 'auto') {
             from_language = new_from_language;

@@ -82,7 +82,7 @@ class Yireo_BingTranslate_Model_Translator extends Varien_Object
         $clientKey = $this->helper->getClientKey();
 
         // Demo
-        if (strtolower($clientKey) == 'demo') {
+        if (strtolower($clientKey) === 'demo') {
             throw new Exception($this->helper->__('API-translation is disabled for this demo'));
         }
 
@@ -99,7 +99,7 @@ class Yireo_BingTranslate_Model_Translator extends Varien_Object
             $toLang = $this->getData('toLang');
         }
 
-        if ($toLang == 'auto') {
+        if ($toLang === 'auto') {
             $toLang = null;
         }
 
@@ -109,7 +109,7 @@ class Yireo_BingTranslate_Model_Translator extends Varien_Object
         }
 
         // If the languages are the same, return the original
-        if ($fromLang == $toLang) {
+        if ($fromLang === $toLang) {
             return $text;
         }
 
@@ -133,7 +133,7 @@ class Yireo_BingTranslate_Model_Translator extends Varien_Object
         $params['session'] = true;
 
         // Bork debugging
-        if (Mage::getStoreConfig('catalog/bingtranslate/bork') || strtolower($clientKey) == 'bork') {
+        if (Mage::getStoreConfig('catalog/bingtranslate/bork') || strtolower($clientKey) === 'bork') {
             $params['handler'] = '\\Yireo\\Translate\\Handler\\Bork';
         }
 
@@ -144,13 +144,17 @@ class Yireo_BingTranslate_Model_Translator extends Varien_Object
         $translator->setText($text);
         $translation = $translator->translate();
 
-        /*
-        if (empty($translation)) {
+        /*if (empty($translation)) {
             $apiError = $this->helper->__('Unknown data');
             $apiError .= '[' . $this->helper->__('from %s to %s', $fromLang, $toLang) . ']';
             throw new Exception($apiError);
         }
-        */
+
+        if ($translation === $text) {
+            $apiError = $this->helper->__('Translation is same as origin');
+            $apiError .= '[' . $this->helper->__('from %s to %s', $fromLang, $toLang) . ']';
+            throw new Exception($apiError);
+        }*/
 
         return $this->setTranslationOutput($translation, $fromLang, $toLang);
     }

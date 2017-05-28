@@ -39,6 +39,7 @@ class Token
     public function __construct($params)
     {
         $this->params = $params;
+        $this->session = \Mage::getModel('core/session');
     }
 
     /**
@@ -72,13 +73,17 @@ class Token
 
     /**
      * @param $token
+     * @return bool
      */
     protected function setTokenInSession($token)
     {
-        if ($this->useSession()) {
-            $_SESSION[$this->getSubscriptionKey() . '.token'] = $token;
-            $_SESSION[$this->getSubscriptionKey() . '.time'] = time();
+        if ($this->useSession() === false) {
+            return false;
         }
+
+        $this->session->setData($this->getSubscriptionKey() . '.token', $token);
+        $this->session->setData($this->getSubscriptionKey() . '.time', time());
+        return true;
     }
 
     /**
@@ -86,22 +91,28 @@ class Token
      */
     protected function getTokenFromSession()
     {
-        if ($this->useSession() == false) {
+        if ($this->useSession() === false) {
             return '';
         }
 
-        if (empty($_SESSION[$this->getSubscriptionKey() . '.token']) || empty($_SESSION[$this->getSubscriptionKey() . '.time'])) {
+        $tokenTime = (int)$this->session->getData($this->getSubscriptionKey() . '.time');
+        $sessionToken = $this->session->getData($this->getSubscriptionKey() . '.token');
+
+        if (empty($tokenTime)) {
             return '';
         }
 
-        $tokenTime = (int) $_SESSION[$this->getSubscriptionKey() . '.time'];
+        if (empty($sessionToken)) {
+            return '';
+        }
+
         $graceTime = 8 * 60;
         if ($tokenTime + $graceTime < time()) {
             $this->setTokenInSession('');
             return '';
         }
 
-        return $_SESSION[$this->getSubscriptionKey() . '.token'];
+        return $sessionToken;
     }
 
     /**
@@ -112,12 +123,7 @@ class Token
     protected function useSession()
     {
         // Check by flag
-        if (!isset($this->params['session']) || $this->params['session'] != true) {
-            return false;
-        }
-
-        // Check if the session has actually started
-        if (session_status() == PHP_SESSION_NONE) {
+        if (!isset($this->params['session']) || $this->params['session'] !== true) {
             return false;
         }
 
@@ -146,9 +152,12 @@ class Token
 
     /**
      * @return string
+     * @throws \Exception
      */
     public function toString()
     {
-        return (string)$this->getToken();
+        $token = $this->getToken();
+
+        return $token;
     }
 }
