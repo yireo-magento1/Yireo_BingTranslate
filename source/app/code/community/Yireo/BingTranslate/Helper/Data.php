@@ -142,7 +142,7 @@ class Yireo_BingTranslate_Helper_Data extends Mage_Core_Helper_Abstract
     public function getToLanguage($store = null)
     {
         if (empty($store)) {
-            $store = Mage::app()->getRequest()->getUserParam('store');
+            $store = $this->getStoreFromRequest();
         }
 
         $toLanguage = Mage::getStoreConfig('catalog/bingtranslate/langcode', $store);
@@ -159,6 +159,14 @@ class Yireo_BingTranslate_Helper_Data extends Mage_Core_Helper_Abstract
         }
 
         return $toLanguage;
+    }
+
+    /**
+     * @return mixed
+     */
+    private function getStoreFromRequest()
+    {
+        return Mage::app()->getRequest()->getUserParam('store');
     }
 
     /**
