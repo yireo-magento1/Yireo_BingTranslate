@@ -4,7 +4,7 @@
  *
  * @package     Yireo_BingTranslate
  * @author      Yireo (https://www.yireo.com/)
- * @copyright   Copyright 2015 Yireo (https://www.yireo.com/)
+ * @copyright   Copyright 2017 Yireo (https://www.yireo.com/)
  * @license     Open Source License (OSL v3)
  */
 
@@ -31,7 +31,7 @@ abstract class Yireo_BingTranslate_Model_Entity
     /**
      * @var string
      */
-    protected $parentLanguage;
+    protected $parentLanguage = '';
 
     /**
      * Allow translation
