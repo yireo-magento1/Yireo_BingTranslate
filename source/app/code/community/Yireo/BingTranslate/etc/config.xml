@@ -5,7 +5,7 @@
  *
  * @package     Yireo_BingTranslate
  * @author      Yireo (https://www.yireo.com/)
- * @copyright   Copyright 2016 Yireo (https://www.yireo.com/)
+ * @copyright   Copyright 2017 Yireo (https://www.yireo.com/)
  * @license     Open Source License (OSL v3)
  */
 -->
@@ -13,7 +13,7 @@
 
     <modules>
         <Yireo_BingTranslate>
-            <version>4.0.2</version>
+            <version>4.0.4</version>
         </Yireo_BingTranslate>
     </modules>
 
@@ -85,16 +85,6 @@
             </core_block_abstract_prepare_layout_before>
         </events>
 
-        <translate>
-            <modules>
-                <Yireo_BingTranslate>
-                    <files>
-                        <default>Yireo_BingTranslate.csv</default>
-                    </files>
-                </Yireo_BingTranslate>
-            </modules>
-        </translate>
-
         <layout>
             <updates>
                 <bingtranslate>
@@ -102,33 +92,6 @@
                 </bingtranslate>
             </updates>
         </layout>
-
-        <acl>
-            <resources>
-                <admin>
-                    <children>
-                        <catalog>
-                            <children>
-                                <bingtranslate translate="title" module="bingtranslate">
-                                    <title>Translate via BingTranslate</title>
-                                </bingtranslate>
-                            </children>
-                        </catalog>
-                        <system>
-                            <children>
-                                <config>
-                                    <children>
-                                        <bingtranslate translate="title" module="bingtranslate">
-                                            <title>BingTranslate Section</title>
-                                        </bingtranslate>
-                                    </children>
-                                </config>
-                            </children>
-                        </system>
-                    </children>
-                </admin>
-            </resources>
-        </acl>
     </adminhtml>
 
     <admin>
@@ -146,9 +109,8 @@
     <default>
         <catalog>
             <bingtranslate>
-                <client_key></client_key>
+                <enabled>1</enabled>
                 <buttonlabel>BingTranslate from $FROM to $TO</buttonlabel>
-                <langcode></langcode>
                 <only_supported_languages>1</only_supported_languages>
                 <overwrite_existing>1</overwrite_existing>
                 <bork>0</bork>
@@ -160,5 +122,4 @@
             </bingtranslate>
         </catalog>
     </default>
-
 </config>

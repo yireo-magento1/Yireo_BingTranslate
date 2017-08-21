@@ -14,6 +14,11 @@
 class Yireo_BingTranslate_Block_Adminhtml_Script extends Mage_Core_Block_Template
 {
     /**
+     * @var Mage_Adminhtml_Model_Url
+     */
+    private $urlModel;
+
+    /**
      * Constructor
      */
     public function __construct()
@@ -21,6 +26,7 @@ class Yireo_BingTranslate_Block_Adminhtml_Script extends Mage_Core_Block_Templat
         parent::__construct();
 
         $this->setData('area', 'adminhtml');
+        $this->urlModel = Mage::getModel('adminhtml/url');
     }
 
     /**
@@ -32,7 +38,7 @@ class Yireo_BingTranslate_Block_Adminhtml_Script extends Mage_Core_Block_Templat
      */
     public function getUrl($route = '', $params = array())
     {
-        return Mage::getModel('adminhtml/url')->getUrl($route, $params);
+        return $this->urlModel->getUrl($route, $params);
     }
 
     /**
