@@ -13,6 +13,9 @@ $itemData = $this->getItemData();
 
 $attributes = $this->getAttributes();
 $stores = $this->getStoreViews();
+
+/** @var Yireo_BingTranslate_Helper_Data $helper */
+$helper = Mage::helper('bingtranslate');
 ?>
 <div class="content-header">
     <table cellspacing="0">
@@ -127,7 +130,6 @@ $stores = $this->getStoreViews();
         <h4><?= $this->__('Stores to be processed'); ?></h4>
     </div>
     <div class="fieldset">
-
         <?php if (empty($stores)) : ?>
             <ul class="messages">
                 <li class="error-msg">
@@ -140,7 +142,7 @@ $stores = $this->getStoreViews();
             </ul>
         <?php endif; ?>
         <p>
-            <?= $this->__('There are %s stores to be translated', $stores->getSize()); ?>
+            <?= $this->__('There are %s stores to be translated from "%s"', $stores->getSize(), $helper->getFromLanguage()); ?>
             <a href="#"
                onclick="jQuery('#batch-stores-listing').toggle(); return false;"><?= $this->__('Show stores'); ?></a>
         </p>

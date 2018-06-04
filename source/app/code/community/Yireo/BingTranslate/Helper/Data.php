@@ -119,6 +119,11 @@ class Yireo_BingTranslate_Helper_Data extends Mage_Core_Helper_Abstract
      */
     public function getFromLanguage()
     {
+        $fromLanguage = Mage::getStoreConfig('catalog/bingtranslate/langcode');
+        if (!empty($fromLanguage)) {
+            return $fromLanguage;
+        }
+
         $parentLocale = Mage::getStoreConfig('general/locale/code');
         $fromLanguage = preg_replace('/_(.*)/', '', $parentLocale);
 
