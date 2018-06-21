@@ -7,259 +7,306 @@
  * @license     Open Source License (OSL v3)
  */
 
-jQuery(function () {
-    jQuery("input").each(function () {
-        YireoBingTranslate.addButtonToInput(jQuery(this));
-    });
-});
-
 /**
  * YireoBingTranslate class
  */
-var YireoBingTranslate = {
+var YireoBingTranslate;
 
-    ajaxEntityBaseUrl: null,
+(function($) {
+    YireoBingTranslate = {
 
-    ajaxTextBaseUrl: null,
+        ajaxEntityBaseUrl: '',
 
-    allowedInputTypes: ['text'],
+        ajaxTextBaseUrl: '',
 
-    skipInputNames: ['news_from_date', 'news_to_date', 'special_from_date', 'special_to_date',
-        'price', 'special_price', 'msrp', 'custom_design_from', 'custom_design_to', 'weight',
-        'simple_product_inventory_qty', 'attribute_code'],
+        allowedInputTypes: ['text'],
 
-    skipInputClasses: ['validate-digits'],
+        skipInputNames: ['news_from_date', 'news_to_date', 'special_from_date', 'special_to_date',
+            'price', 'special_price', 'msrp', 'custom_design_from', 'custom_design_to', 'weight',
+            'simple_product_inventory_qty', 'attribute_code'],
 
-    debug: true,
+        skipInputClasses: ['validate-digits'],
 
-    translateText: function (anchor, from_language, to_language) {
+        debug: true,
 
-        // Fetch the from_language and to_language if not yet set
-        var new_from_language = $('bingtranslate_source_language').value;
-        var new_to_language = $('bingtranslate_destination_language').value;
+        translateText: function (anchor, from_language, to_language) {
 
-        if (new_from_language && new_from_language != 'auto') {
-            from_language = new_from_language;
-        }
+            from_language = this.getFromLanguage(from_language);
+            to_language = this.getToLanguage(to_language);
 
-        if (new_to_language && new_to_language != 'auto') {
-            to_language = new_to_language;
-        }
+            var $field = jQuery(anchor).parent().children('input');
 
-        var field = jQuery(anchor).parent().children('input');
+            if (!$field.length || $field.disabled) {
+                this.doDebug('Field ' + anchor + ' disabled');
+                return false;
+            }
 
-        if (field == null || field.disabled) {
-            this.doDebug('Field ' + html_id + ' disabled');
-            return false;
-        }
+            // Skip if the languages are equal
+            if (to_language === from_language) {
+                this.doDebug('Languages are equal: ' + to_language + ' == ' + from_language);
+                return false;
+            }
 
-        // Skip if the languages are equal
-        if (to_language == from_language) {
-            return false;
-        }
+            var ajaxUrl = this.getAjaxTextUrl($field, from_language, to_language);
 
-        var ajaxUrl = this.ajaxTextBaseUrl
-                + 'string/' + field.val() + '/'
+            this.ajax(ajaxUrl, $field);
+        },
+
+        translateAttribute: function (data_id, attribute_code, html_id, store_id, from_language, to_language) {
+
+            from_language = this.getFromLanguage(from_language);
+            to_language = this.getToLanguage(to_language);
+
+            // Skip if the languages are equal
+            if (to_language === from_language) {
+                this.doDebug('Languages are equal: ' + to_language + ' == ' + from_language);
+                return false;
+            }
+
+            // Define variables
+            var $button = $('bingtranslate_button_' + attribute_code);
+            var ajaxUrl = this.getAjaxEntityUrl(data_id, attribute_code, store_id, from_language, to_language);
+
+            // Check if the field is actually enabled
+            var $field = $('#' + html_id);
+            if (!$field.length > 0 || $field.disabled) {
+                if ($button.length) {
+                    $button.disabled = true;
+                    $button.className = 'disabled';
+                }
+
+                this.doDebug('No field with ID "' + html_id + '"');
+                return false;
+            }
+
+            this.ajax(ajaxUrl, $field, $button);
+
+            return true;
+        },
+
+        getAjaxTextUrl: function($field, from_language, to_language) {
+            return this.ajaxTextBaseUrl
+                + 'string/' + $field.val() + '/'
                 + 'from/' + from_language + '/'
                 + 'to/' + to_language + '/'
             ;
+        },
 
-        this.ajax(ajaxUrl, field);
-    },
-
-    translateAttribute: function (data_id, attribute_code, html_id, store_id, from_language, to_language) {
-
-        // Fetch the from_language and to_language if not yet set
-        if ($('bingtranslate_source_language')) {
-            var new_from_language = $('bingtranslate_source_language').value;
-        }
-
-        if ($('bingtranslate_destination_language')) {
-            var new_to_language = $('bingtranslate_destination_language').value;
-        }
-
-        if (new_from_language && new_from_language != 'auto') {
-            from_language = new_from_language;
-        }
-
-        if (new_to_language && new_to_language != 'auto') {
-            to_language = new_to_language;
-        }
-
-        // Skip if the languages are equal
-        if (to_language == from_language) {
-            return false;
-        }
-
-        // Define variables
-        var button = $('bingtranslate_button_' + attribute_code);
-        var ajaxUrl = this.ajaxEntityBaseUrl
+        getAjaxEntityUrl: function(data_id, attribute_code, store_id, from_language, to_language) {
+            return this.ajaxEntityBaseUrl
                 + 'id/' + data_id + '/'
                 + 'attribute/' + attribute_code + '/'
                 + 'from/' + from_language + '/'
                 + 'to/' + to_language + '/'
                 + 'store/' + store_id + '/'
             ;
+        },
 
-        // Check if the field is actually enabled
-        var field = $(html_id);
-        if (field == null || field.disabled) {
-            if (button) {
-                button.disabled = true;
-                button.className = 'disabled';
+        getFromLanguage: function (defaultLanguage) {
+            var $bingTranslateSourceLanguage = $('#bingtranslate_source_language');
+            var new_from_language = $bingTranslateSourceLanguage.val();
+
+            if (new_from_language !== undefined && new_from_language !== 'auto') {
+                return new_from_language;
             }
-            return false;
-        }
 
-        this.ajax(ajaxUrl, field, button);
+            if (defaultLanguage !== undefined) {
+                return defaultLanguage;
+            }
 
-        return true;
-    },
+            throw 'Source language is not defined';
+        },
 
-    ajax: function (ajaxUrl, field) {
+        getToLanguage: function (defaultLanguage) {
+            var $bingTranslateDestinationLanguage = $('#bingtranslate_destination_language');
+            var new_to_language = $bingTranslateDestinationLanguage.val();
 
-        // If all is right, perform an AJAX-request
-        new Ajax.Request(ajaxUrl, {
-            method: 'get',
-            onSuccess: function (transport) {
-                var response = transport.responseText;
-                if (response) {
-                    json = response.evalJSON(true);
+            if (new_to_language !== undefined && new_to_language !== 'auto') {
+                return new_to_language;
+            }
 
-                    // Alert in case of an error
-                    if (json.error) {
-                        if (json.message) {
-                            message = json.message;
+            if (defaultLanguage !== undefined) {
+                return defaultLanguage;
+            }
+
+            throw 'Destination language is not defined';
+        },
+
+        ajax: function (ajaxUrl, $field, $button) {
+
+            // If all is right, perform an AJAX-request
+            new Ajax.Request(ajaxUrl, {
+                method: 'get',
+                onSuccess: function (transport) {
+                    var response = transport.responseText;
+                    var message;
+
+                    if (response) {
+                        var json = response.evalJSON(true);
+
+                        // Alert in case of an error
+                        if (json.error) {
+                            if (json.message) {
+                                message = json.message;
+                            } else {
+                                message = json.error;
+                            }
+
+                            alert('ERROR: ' + message);
+
+                            // Set the new field-value and disable the button
                         } else {
-                            message = json.error;
-                        }
+                            if (!$field instanceof jQuery) {
+                                $field = $($field);
+                            }
 
-                        alert('ERROR: ' + message);
+                            if ($field.length) {
+                                $field.val(json.translation);
+                                $field.parent().removeClass('active');
+                            }
 
-                        // Set the new field-value and disable the button
-                    } else {
-                        if (field instanceof jQuery) {
-                            field.val(json.translation);
-                        } else {
-                            $(field).value = json.translation;
-                        }
+                            if (tinyMCE) {
+                                var editor = tinyMCE.get(html_id);
+                                if (editor) {
+                                    editor.setContent(json.translation);
+                                }
+                            }
 
-                        if (tinyMCE) {
-                            var editor = tinyMCE.get(html_id);
-                            if (editor) {
-                                editor.setContent(json.translation);
+                            if ($button) {
+                                $button.className = 'disabled';
+                                $button.disabled = true;
                             }
                         }
+                    }
+                },
 
-                        if (button) {
-                            button.className = 'disabled';
-                            button.disabled = true;
-                        }
+                // General failure
+                onFailure: function () {
+                    throw 'Failed to contact BingTranslate';
+                }
+            });
+        },
+
+        addButtonToInput: function ($input) {
+            var inputId = $input.attr('id');
+            var inputName = $input.attr('name');
+            var inputType = $input.attr('type');
+            var inputClass = $input.attr('class');
+
+            if (inputId === undefined) {
+                return false;
+            }
+
+            if (inputName === undefined) {
+                return false;
+            }
+
+            if ($input.attr('disabled') === 'disabled' || $input.prop('readonly')) {
+                this.doDebug('Input disabled or readonly');
+                return false;
+            }
+
+            if (this.inArray(inputName, this.skipInputNames) || this.inArray(inputId, this.skipInputNames)) {
+                this.doDebug('Input ' + inputName + ' in skip list');
+                return true;
+            }
+
+            if (inputClass !== undefined) {
+                for (var i = 0; i < this.skipInputClasses.length; i++) {
+                    if (inputClass.indexOf(this.skipInputClasses[i]) > -1) {
+                        this.doDebug('Input class ' + inputClass + ' in skip list');
+                        return true;
                     }
                 }
-            },
-
-            // General failure
-            onFailure: function () {
-                alert('Failed to contact BingTranslate')
             }
-        });
-    },
 
-    addButtonToInput: function (input) {
-        var inputId = input.attr('id');
-        var inputName = input.attr('name');
-        var inputType = input.attr('type');
-        var inputClass = input.attr('class');
+            if (this.inArray(inputType, this.allowedInputTypes) === false) {
+                this.doDebug('Input ' + inputName + ' not in allowed input types');
+                return false;
+            }
 
-        if (inputId == undefined) {
-            //this.doDebug('Input ID undefined');
-            return false;
-        }
+            var widgetId = $input.attr('id') + '_btwidget';
+            $input.replaceWith(this.getHtmlWidget($input.prop('outerHTML'), widgetId));
 
-        if (inputName == undefined) {
-            //this.doDebug('Input name undefined');
-            return false;
-        }
+            var $widget = $('#' + widgetId);
+            $widget.click(function() {
+                $(this).parent().addClass('active');
+            });
 
-        if (input.attr('disabled') == 'disabled' || input.prop('readonly')) {
-            this.doDebug('Input disabled or readonly');
-            return false;
-        }
+            $input = $('#' + inputId);
+            $input.focus(function() {
+                $(this).parent().addClass('active');
+            });
 
-        if (this.inArray(inputName, this.skipInputNames) || this.inArray(inputId, this.skipInputNames)) {
-            this.doDebug('Input ' + inputName + ' in skip list');
+            $input.blur(function() {
+                $(this).parent().removeClass('active');
+            });
+
+            $input.change(function() {
+                if ($input.val()) {
+                    $widget.show();
+                } else {
+                    $widget.hide();
+                }
+            });
+
+            if ($input.val()) {
+                $widget.show();
+            } else {
+                $widget.hide();
+            }
+
             return true;
-        }
+        },
+        
+        getHtmlWidget: function(fieldHtml, widgetId) {
 
-        if (inputClass != undefined) {
-            for (var i = 0; i < this.skipInputClasses.length; i++) {
-                if (inputClass.indexOf(this.skipInputClasses[i]) > -1) {
-                    this.doDebug('Input class ' + inputClass + ' in skip list');
+            return '<div class="bingtranslate-container">'
+                + fieldHtml
+                + '<a href="#" id="' + widgetId + '" onclick="YireoBingTranslate.translateText(this); return false;">'
+                + '<div class="bingtranslate-icon">'
+                + '&nbsp;'
+                + '</div>'
+                + '</a>'
+                + '</div>';
+        },
+
+        inArray: function (name, array) {
+            var count = array.length;
+            for (var i = 0; i < count; i++) {
+                if (array[i] === name) {
+                    return true;
+                }
+
+                if ('jform_' + array[i] === name) {
+                    return true;
+                }
+
+                if ('params_' + array[i] === name) {
                     return true;
                 }
             }
-        }
 
-        if (this.inArray(inputType, this.allowedInputTypes) == false) {
-            this.doDebug('Input ' + inputName + ' not in allowed input types');
             return false;
+        },
+
+        doDebug: function (string, variable) {
+            if (this.debug === false) {
+                return false;
+            }
+
+            console.log(string);
+            if (variable) {
+                console.log(variable);
+            }
+
+            return true;
         }
+    };
 
-        var parent = input.parent();
-        var html = '<div class="bingtranslate-container">'
-            + input.prop('outerHTML')
-            + '<a href="#" title="BingTranslate" onclick="javascript:YireoBingTranslate.translateText(this); return false;">'
-            + '<div class="bingtranslate-icon">'
-            + '&nbsp;'
-            + '</div>'
-            + '</a>'
-            + '</div>';
-
-        input.replaceWith(html);
-
-        jQuery('#' + inputId).focus(function() {
-           jQuery(this).parent().addClass('active');
+    $(function () {
+        $("input").each(function () {
+            YireoBingTranslate.addButtonToInput($(this));
         });
-
-        jQuery('#' + inputId).blur(function() {
-            jQuery(this).parent().removeClass('active');
-        });
-
-        //console.log(inputName + ' / ' + inputId + ' = ' + inputType);
-
-        return true;
-    },
-
-    inArray: function (name, array) {
-        var count = array.length;
-        for (var i = 0; i < count; i++) {
-            if (array[i] === name) {
-                return true;
-            }
-
-            if ('jform_' + array[i] === name) {
-                return true;
-            }
-
-            if ('params_' + array[i] === name) {
-                return true;
-            }
-        }
-
-        return false;
-    },
-
-    doDebug: function (string, variable) {
-        if (this.debug == false) {
-            return false;
-        }
-
-        console.log(string);
-        if (variable) {
-            console.log(variable);
-        }
-
-        return true;
-    }
-}
+    });
+})(jQuery);
