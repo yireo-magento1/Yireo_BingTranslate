@@ -43,7 +43,7 @@ var YireoBingTranslate;
 
             // Skip if the languages are equal
             if (to_language === from_language) {
-                this.doDebug('Languages are equal: ' + to_language + ' == ' + from_language);
+                this.showAlert('Languages are equal: ' + to_language + ' == ' + from_language);
                 return false;
             }
 
@@ -84,9 +84,19 @@ var YireoBingTranslate;
             return true;
         },
 
+        getSourceText: function($field) {
+            var sourceText = $field.val();
+            return this.sanitizeText(sourceText);
+        },
+
+        sanitizeText: function(text) {
+            text = text.replace('/', '|');
+            return text;
+        },
+
         getAjaxTextUrl: function($field, from_language, to_language) {
             return this.ajaxTextBaseUrl
-                + 'string/' + $field.val() + '/'
+                + 'string/' + this.getSourceText($field) + '/'
                 + 'from/' + from_language + '/'
                 + 'to/' + to_language + '/'
             ;
@@ -250,6 +260,14 @@ var YireoBingTranslate;
                 }
             });
 
+            $input.keyup(function() {
+                if ($input.val()) {
+                    $widget.show();
+                } else {
+                    $widget.hide();
+                }
+            });
+
             if ($input.val()) {
                 $widget.show();
             } else {
@@ -288,6 +306,10 @@ var YireoBingTranslate;
             }
 
             return false;
+        },
+
+        showAlert: function (string) {
+            alert(string);
         },
 
         doDebug: function (string, variable) {
